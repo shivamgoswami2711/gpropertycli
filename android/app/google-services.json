@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "806711796840",
+    "project_id": "gproperty-366912",
+    "storage_bucket": "gproperty-366912.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:806711796840:android:75a43a2a9e9efa6d0e07dd",
+        "android_client_info": {
+          "package_name": "com.gpropertypay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "806711796840-pj2519asrkfeu9md7par4rjru7uqdrr9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gpropertypay",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "806711796840-enbfss9hc5ekrf60tu20hvkpcvsl5sl5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvj2Gv0wKlFu_VfuFZnSXg-2slBnWWdok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "806711796840-enbfss9hc5ekrf60tu20hvkpcvsl5sl5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "806711796840-l3r059eq9evdp6m392nrfak56atdkgcl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zolo.gpeoperty"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
