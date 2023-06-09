@@ -1,39 +1,3 @@
-// import React, { useEffect, useMemo, useCallback } from "react";
-// import {
-//   View,
-//   Text,
-//   ScrollView,
-//   Image,
-//   StyleSheet,
-//   FlatList,
-//   ActivityIndicator,
-//   TouchableOpacity,
-// } from "react-native";
-// // import { useDispatch, useSelector } from "react-redux";
-// // import { propertyHome } from "../redux/actions/home";
-// // import { useRouter } from "expo-router";
-// // import FlatlistComponent from "../../component/FlatlistSmailCard";
-
-// const Home = () => {
-// //   const home = useSelector((state) => state.home);
-// //   const dispatch = useDispatch();
-// //   const router = useRouter();
-
-// //   useEffect(() => {
-// //     const type = ["sell", "rent"];
-// //     type.forEach((type) => dispatch(propertyHome(type)));
-// //   }, [dispatch]);
-
-// //   const renderFooter = useCallback(() => {
-// //     if (!home?.loading) return null;
-
-// //     return (
-// //       <View style={styles.footer}>
-// //         <ActivityIndicator size="small" color="#000000" />
-// //       </View>
-// //     );
-// //   }, [home?.loading]);
-
 import {
   Image,
   ScrollView,
@@ -42,15 +6,28 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   View,
+  FlatList,
 } from 'react-native';
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import skyline from '../../assets/skyline.jpg';
 import housebuy from '../../assets/housebuy.png';
 import housereant from '../../assets/housereant.png';
 import housesale from '../../assets/housesale.png';
+import FlatlistComponent from '../component/FlatlistSmailCard';
+import {propertyHome} from '../../redux/actions/home';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const Home = ({navigation}) => {
-  
+  const home = useSelector(state => state.home);
+  const property = useSelector(state => state.property);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const type = ['sell', 'rent'];
+    type.forEach(type => dispatch(propertyHome(type)));
+  }, [dispatch]);
+
   const renderFooter = useCallback(() => {
     if (!home?.loading) return null;
 
@@ -63,27 +40,48 @@ const Home = ({navigation}) => {
 
   return (
     <View>
+      {property.uploading && (
+        <View
+          style={{
+            height: 35,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#454b52',
+          }}>
+          <Text style={{fontSize: 16, color: '#ff9e3d'}}>Uploading......</Text>
+        </View>
+      )}
       <View style={styles.addNewButtonContainer}>
-        <TouchableOpacity style={styles.addNewButton}></TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Sell')}
+          style={styles.addNewButton}>
+          <Icon name="plus" size={30} color="#900" />
+        </TouchableOpacity>
       </View>
       <ScrollView>
         <View style={styles.container}>
           <Image source={skyline} style={styles.backgroundImage} />
           <View style={styles.cardContainer}>
             <View style={styles.card}>
-              <TouchableOpacity onPress={console.log('hello')}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('Property', {property_for: 'buy'})
+                }>
                 <View style={styles.menuContainer}>
                   <Image source={housebuy} style={styles.menuIcon} />
                   <Text style={styles.menuTitle}>{`Buy \nproperty`}</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={console.log('hello')}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('Property', {property_for: 'rent'})
+                }>
                 <View style={styles.menuContainer}>
                   <Image source={housereant} style={styles.menuIcon} />
                   <Text style={styles.menuTitle}>{`Rent \nproperty`}</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('Sell')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
                 <View style={styles.menuContainer}>
                   <Image source={housesale} style={styles.menuIcon} />
                   <Text style={styles.menuTitle}>{`Sell \nproperty`}</Text>
@@ -97,14 +95,14 @@ const Home = ({navigation}) => {
             <View style={styles.horizontalListTextContainer}>
               <Text style={styles.horizontalListText}>Buy property</Text>
             </View>
-            {/* <FlatList
+            <FlatList
               style={styles.FlatListStyle}
               data={home?.property?.sell}
               renderItem={({index, item}) => (
                 <FlatlistComponent
                   index={index}
                   item={item}
-                  router={RouterFunc}
+                  router={navigation}
                 />
               )}
               horizontal={true}
@@ -114,26 +112,37 @@ const Home = ({navigation}) => {
                 <View style={{width: 15, height: '100%'}} />
               )}
               ListHeaderComponent={() => <View style={{width: 12}} />}
-            /> */}
+            />
           </View>
           <View style={styles.horizontalListContainer}>
             <View style={styles.horizontalListTextContainer}>
               <Text style={styles.horizontalListText}>Rent property</Text>
             </View>
-            {/* <FlatList
+            <FlatList
               data={home?.property?.rent}
               renderItem={({index, item}) => (
-                <FlatlistComponent index={index} item={item} router={router} />
+                <FlatlistComponent
+                  index={index}
+                  item={item}
+                  router={navigation}
+                />
               )}
               ListFooterComponent={renderFooter}
               horizontal={true}
-              keyExtractor={item => item.id}
+              navigation={item => item.id}
               ItemSeparatorComponent={() => (
                 <View style={{width: 10, height: '100%'}} />
               )}
               ListHeaderComponent={() => <View style={{width: 12}} />}
-            /> */}
+            />
           </View>
+        </View>
+        <View style={[styles.container, {height: 150}]}>
+          <Image
+            source={{uri: 'https://gpropertypay.com/public/assets/footer.jpg'}}
+            style={styles.backgroundImage}
+          />
+          <View style={styles.cardContainer}></View>
         </View>
       </ScrollView>
     </View>

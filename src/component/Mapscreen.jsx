@@ -4,6 +4,7 @@ import {
   Dimensions,
   StyleSheet,
   PermissionsAndroid,
+  Alert
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
@@ -33,17 +34,17 @@ const MapScreen = ({setLat, setLong}) => {
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         Geolocation.getCurrentPosition(
           coords => {
-            setLocation(coords);
+            setLocation(coords && coords.coords);
             setRegion({
-              latitude: coords.latitude,
-              longitude: coords.longitude,
+              latitude: coords && coords.coords.latitude,
+              longitude: coords && coords.coords.longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             });
           },
           error => {
             // See error code charts below.
-            console.log(error.code, error.message);
+            Alert.alert(error.message)
           },
           {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );

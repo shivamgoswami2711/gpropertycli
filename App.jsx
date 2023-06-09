@@ -8,17 +8,68 @@
 import React from 'react';
 import {View} from 'react-native';
 import store from './redux/store';
-import { NavigationContainer } from '@react-navigation/native'
+import {NavigationContainer} from '@react-navigation/native';
 import DrawerNavigation from './drawer/DrawerNavigation';
-import { Provider as ReduxProvider } from "react-redux";
+import {Provider as ReduxProvider} from 'react-redux';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Sell from './src/screens/Sell';
+import Login from './src/screens/Login';
+import Post from './src/screens/Post';
+import Property from './src/screens/Property';
+import Splash from './src/screens/Splash';
+import Profile from './src/screens/Profile';
+import EdtProperty from './src/screens/EdtProperty';
 
 function App() {
+  const Stack = createNativeStackNavigator();
+
   return (
-    <View style={{flex: 1,marginTop:2}}>
-    <ReduxProvider store={store}>
-      <NavigationContainer>
-        <DrawerNavigation />
-      </NavigationContainer>
+    <View style={{flex: 1, marginTop: 2}}>
+      <ReduxProvider store={store}>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Splash">
+            <Stack.Screen
+              name="Splash"
+              options={{headerShown: false}}
+              component={Splash}
+            />
+            <Stack.Screen
+              name="HomePage"
+              options={{headerShown: false}}
+              component={DrawerNavigation}
+            />
+            <Stack.Screen
+              name="Sell"
+              options={{headerShown: false}}
+              component={Sell}
+            />
+            <Stack.Screen
+              name="Login"
+              options={{headerShown: false}}
+              component={Login}
+            />
+            <Stack.Screen
+              name="Post"
+              options={{headerShown: false}}
+              component={Post}
+            />
+            <Stack.Screen
+              name="Property"
+              options={{headerShown: false}}
+              component={Property}
+            />
+            <Stack.Screen
+              name="Profile"
+              options={{headerShown: false}}
+              component={Profile}
+            />
+            <Stack.Screen
+              name="EdtProperty"
+              options={{headerShown: false}}
+              component={EdtProperty}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
       </ReduxProvider>
     </View>
   );

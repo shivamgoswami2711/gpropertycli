@@ -1,5 +1,5 @@
 export const typeofName = [
-    "Apartment", //0
+    "Apartments", //0
     "House",//1
     "Villa",//2
     "Shop",//3
@@ -66,16 +66,16 @@ export const typeofName = [
       value: "",
     },
     {
-      label: "Sq.feet",
-      value: "Sq.feet",
+      label: "Feet",
+      value: "Feet",
     },
     {
-      label: "Sq.meters",
-      value: "Sq.meters",
+      label: "Meters",
+      value: "Meters",
     },
     {
-      label: "Sq.yards",
-      value: "Sq.yards",
+      label: "Yards",
+      value: "Yards",
     },
     {
       label: "Bigha",
@@ -88,6 +88,34 @@ export const typeofName = [
     {
       label: "Hectares",
       value: "Hectares",
+    },
+  ];
+  export const carpet_areaData = [
+    {
+      label: "Feet",
+      value: "Feet",
+    },
+    {
+      label: "Meters",
+      value: "Meters",
+    },
+    {
+      label: "Yards",
+      value: "Yards",
+    },
+  ];
+  export const facing_road_width_inData = [
+    {
+      label: "Select",
+      value: "",
+    },
+    {
+      label: "Feet",
+      value: "Feet",
+    },
+    {
+      label: "Meters",
+      value: "Meters",
     },
   ];
   

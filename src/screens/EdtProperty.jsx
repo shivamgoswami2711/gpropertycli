@@ -9,6 +9,7 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import React, {useRef, useState, useEffect} from 'react';
@@ -34,11 +35,12 @@ import {addNewpropertie} from '../../redux/actions/properties';
 // phone size width
 const WIDTH = Dimensions.get('window').width;
 
-const Sell = ({navigation}) => {
+const EdtProperty = ({route, navigation}) => {
   // bedroom picker data
   const dispatch = useDispatch();
   const bedroomsNumber = BedroomsNumber();
   const {profile} = useSelector(state => state.user);
+  const {loading, oneproperty} = useSelector(state => state.property);
 
   // adding 1rk in bedroom picker data
   bedroomsNumber.push({
@@ -47,89 +49,224 @@ const Sell = ({navigation}) => {
   });
 
   const userId = profile.id;
+
   useEffect(() => {
     if (!userId) navigation.dispatch(navigation.push('Login'));
   }, []);
 
   // all vareable
 
-  const [property_for, setProperty_for] = useState('');
-  const [lat, setLat] = useState(0);
-  const [long, setLong] = useState(0);
-  const [property_type, setProperty_type] = useState('');
-  const [added_by_type, setAdded_by_type] = useState('');
-  const [location, setLocation] = useState('');
-  const [bedrooms, setBedrooms] = useState('');
-  const [saleable_area, setSaleable_area] = useState('');
-  const [saleable_area_size_in, setSaleable_area_size_in] = useState('');
-  const [carpet_area, setCarpet_area] = useState('');
-  const [carpet_area_size_in, setCarpet_area_size_in] = useState('Meters');
-  const [bathrooms, setBathrooms] = useState('');
-  const [balconies, setBalconies] = useState('');
-  const [additional_facility, setAdditional_facility] = useState('');
-  const [expected_price, setExpected_price] = useState('');
-  const [expected_price_in_sqft, setExpected_price_in_sqft] = useState('');
-  const [booking_price, setBooking_price] = useState('');
-  const [monthly_rent, setMonthly_rent] = useState('');
-  const [security_deposit, setSecurity_deposit] = useState('');
-  const [maintance_charge, setMaintance_charge] = useState('');
-  const [available_from, setAvailable_from] = useState('');
-  const [property_status, setProperty_status] = useState('');
-  const [property_age, setProperty_age] = useState('');
-  const [possession_date, setPossession_date] = useState(
-    new Date().toDateString(),
+  const [property_for, setProperty_for] = useState(
+    oneproperty?.property_for ? oneproperty?.property_for : '',
   );
-  const [description, setDescription] = useState('');
-  const [furnishing_status, setFurnishing_status] = useState('');
+  const [lat, setLat] = useState(oneproperty?.lat ? oneproperty?.lat : 0);
+  const [long, setLong] = useState(oneproperty?.long ? oneproperty?.long : 0);
+  const [property_type, setProperty_type] = useState(
+    oneproperty?.property_type ? oneproperty?.property_type : '',
+  );
+  const [added_by_type, setAdded_by_type] = useState(
+    oneproperty?.added_by_type ? oneproperty?.added_by_type : '',
+  );
+  const [location, setLocation] = useState(
+    oneproperty?.location ? oneproperty?.location : '',
+  );
+  const [bedrooms, setBedrooms] = useState(
+    oneproperty?.bedrooms ? oneproperty?.bedrooms : '',
+  );
+  const [saleable_area, setSaleable_area] = useState(
+    oneproperty?.saleable_area ? oneproperty?.saleable_area : '',
+  );
+  const [saleable_area_size_in, setSaleable_area_size_in] = useState(
+    oneproperty?.saleable_area_size_in
+      ? oneproperty?.saleable_area_size_in
+      : '',
+  );
+  const [carpet_area, setCarpet_area] = useState(
+    oneproperty?.carpet_area ? oneproperty?.carpet_area : '',
+  );
+  const [carpet_area_size_in, setCarpet_area_size_in] = useState(
+    oneproperty?.carpet_area_size_in
+      ? oneproperty?.carpet_area_size_in
+      : 'Meters',
+  );
+  const [bathrooms, setBathrooms] = useState(
+    oneproperty?.bathrooms ? oneproperty?.bathrooms : '',
+  );
+  const [balconies, setBalconies] = useState(
+    oneproperty?.balconies ? oneproperty?.balconies : '',
+  );
+  const [additional_facility, setAdditional_facility] = useState(
+    oneproperty?.additional_facility ? oneproperty?.additional_facility : '',
+  );
+  const [expected_price, setExpected_price] = useState(
+    oneproperty?.expected_price ? oneproperty?.expected_price : '',
+  );
+  const [expected_price_in_sqft, setExpected_price_in_sqft] = useState(
+    oneproperty?.expected_price_in_sqft
+      ? oneproperty?.expected_price_in_sqft
+      : '',
+  );
+  const [booking_price, setBooking_price] = useState(
+    oneproperty?.booking_price ? oneproperty?.booking_price : '',
+  );
+  const [monthly_rent, setMonthly_rent] = useState(
+    oneproperty?.monthly_rent ? oneproperty?.monthly_rent : '',
+  );
+  const [security_deposit, setSecurity_deposit] = useState(
+    oneproperty?.security_deposit ? oneproperty?.security_deposit : '',
+  );
+  const [maintance_charge, setMaintance_charge] = useState(
+    oneproperty?.maintance_charge ? oneproperty?.maintance_charge : '',
+  );
+  const [available_from, setAvailable_from] = useState(
+    oneproperty?.available_from ? oneproperty?.available_from : '',
+  );
+  const [property_status, setProperty_status] = useState(
+    oneproperty?.property_status ? oneproperty?.property_status : '',
+  );
+  const [property_age, setProperty_age] = useState(
+    oneproperty?.property_age ? oneproperty?.property_age : '',
+  );
+  const [possession_date, setPossession_date] = useState(
+    oneproperty?.possession_date
+      ? oneproperty?.possession_date
+      : new Date().toDateString(),
+  );
+  const [description, setDescription] = useState(
+    oneproperty?.description ? oneproperty?.description : '',
+  );
+  const [furnishing_status, setFurnishing_status] = useState(
+    oneproperty?.furnishing_status ? oneproperty?.furnishing_status : '',
+  );
   const [negotiable, setNegotiable] = useState('no');
-  const [wardrobe, setWardrobe] = useState('');
-  const [beds, setBeds] = useState('');
-  const [ac, setAc] = useState('');
-  const [tv, setTv] = useState('');
-  const [light, setLight] = useState('');
-  const [fan, setFan] = useState('');
-  const [exhaust_fan, setExhaust_fan] = useState('');
-  const [additional_room, setAdditional_room] = useState([]);
-  const [additional_furnishing, setAdditional_furnishing] = useState('');
-  const [floor, setFloor] = useState('');
-  const [total_floor, setTotal_floor] = useState('');
-  const [open_side, setOpen_side] = useState('');
-  const [facing_side, setFacing_side] = useState('');
-  const [facing_road_width, setFacing_road_width] = useState('');
-  const [facing_road_width_in, setFacing_road_width_in] = useState('');
-  const [overlooking, setOverlooking] = useState([]);
-  const [ownershiptype, setOwnershiptype] = useState('');
-  const [living_room, setLiving_room] = useState('');
-  const [kitchen, setKitchen] = useState('');
-  const [master_bedroom, setMaster_bedroom] = useState('');
-  const [bathroom, setBathroom] = useState('');
-  const [balcony, setBalcony] = useState('');
-  const [other_bedroom, setOther_bedroom] = useState('');
-  const [preferred_tenants, setPreferred_tenants] = useState('');
-  const [gender_preference, setGender_preference] = useState('');
-  const [maximum_tentants_allowed, setMaximum_tentants_allowed] = useState('');
-  const [work_preference, setWork_preference] = useState('');
-  const [food_preference, setFood_preference] = useState('');
-  const [expected_duration_of_stay, setExpected_duration_of_stay] =
-    useState('');
-  const [special_requirement, setSpecial_requirement] = useState('');
-  const [images, setImages] = useState([]);
-  const [room_data, setRoom_data] = useState([]);
-  const [video, setVideo] = useState('');
-  const [views, setViews] = useState('');
+  const [wardrobe, setWardrobe] = useState(
+    oneproperty?.wardrobe ? oneproperty?.wardrobe : '',
+  );
+  const [beds, setBeds] = useState(oneproperty?.beds ? oneproperty?.beds : '');
+  const [ac, setAc] = useState(oneproperty?.ac ? oneproperty?.ac : '');
+  const [tv, setTv] = useState(oneproperty?.tv ? oneproperty?.tv : '');
+  const [light, setLight] = useState(
+    oneproperty?.light ? oneproperty?.light : '',
+  );
+  const [fan, setFan] = useState(oneproperty?.fan ? oneproperty?.fan : '');
+  const [exhaust_fan, setExhaust_fan] = useState(
+    oneproperty?.exhaust_fan ? oneproperty?.exhaust_fan : '',
+  );
+  const [additional_room, setAdditional_room] = useState(
+    oneproperty?.additional_room ? oneproperty?.additional_room.split(',') : [],
+  );
+  const [additional_furnishing, setAdditional_furnishing] = useState(
+    oneproperty?.additional_furnishing
+      ? oneproperty?.additional_furnishing
+      : '',
+  );
+  const [floor, setFloor] = useState(
+    oneproperty?.floor ? oneproperty?.floor : '',
+  );
+  const [total_floor, setTotal_floor] = useState(
+    oneproperty?.total_floor ? oneproperty?.total_floor : '',
+  );
+  const [open_side, setOpen_side] = useState(
+    oneproperty?.open_side ? oneproperty?.open_side : '',
+  );
+  const [facing_side, setFacing_side] = useState(
+    oneproperty?.facing_side ? oneproperty?.facing_side : '',
+  );
+  const [facing_road_width, setFacing_road_width] = useState(
+    oneproperty?.facing_road_width ? oneproperty?.facing_road_width : '',
+  );
+  const [facing_road_width_in, setFacing_road_width_in] = useState(
+    oneproperty?.facing_road_width_in ? oneproperty?.facing_road_width_in : '',
+  );
+  const [overlooking, setOverlooking] = useState(
+    oneproperty?.overlooking
+      ? oneproperty?.overlooking.overlooking.split(',')
+      : [],
+  );
+  const [ownershiptype, setOwnershiptype] = useState(
+    oneproperty?.ownershiptype ? oneproperty?.ownershiptype : '',
+  );
+  const [living_room, setLiving_room] = useState(
+    oneproperty?.living_room ? oneproperty?.living_room : '',
+  );
+  const [kitchen, setKitchen] = useState(
+    oneproperty?.kitchen ? oneproperty?.kitchen : '',
+  );
+  const [master_bedroom, setMaster_bedroom] = useState(
+    oneproperty?.master_bedroom ? oneproperty?.master_bedroom : '',
+  );
+  const [bathroom, setBathroom] = useState(
+    oneproperty?.bathroom ? oneproperty?.bathroom : '',
+  );
+  const [balcony, setBalcony] = useState(
+    oneproperty?.balcony ? oneproperty?.balcony : '',
+  );
+  const [other_bedroom, setOther_bedroom] = useState(
+    oneproperty?.other_bedroom ? oneproperty?.other_bedroom : '',
+  );
+  const [preferred_tenants, setPreferred_tenants] = useState(
+    oneproperty?.preferred_tenants ? oneproperty?.preferred_tenants : '',
+  );
+  const [gender_preference, setGender_preference] = useState(
+    oneproperty?.gender_preference ? oneproperty?.gender_preference : '',
+  );
+  const [maximum_tentants_allowed, setMaximum_tentants_allowed] = useState(
+    oneproperty?.maximum_tentants_allowed
+      ? oneproperty?.maximum_tentants_allowed
+      : '',
+  );
+  const [work_preference, setWork_preference] = useState(
+    oneproperty?.work_preference ? oneproperty?.work_preference : '',
+  );
+  const [food_preference, setFood_preference] = useState(
+    oneproperty?.food_preference ? oneproperty?.food_preference : '',
+  );
+  const [expected_duration_of_stay, setExpected_duration_of_stay] = useState(
+    oneproperty?.expected_duration_of_stay
+      ? oneproperty?.expected_duration_of_stay
+      : '',
+  );
+  const [special_requirement, setSpecial_requirement] = useState(
+    oneproperty?.special_requirement ? oneproperty?.special_requirement : '',
+  );
+  const [images, setImages] = useState(
+    oneproperty?.images ? JSON.parse(oneproperty?.images) : [],
+  );
+  const [room_data, setRoom_data] = useState(
+    oneproperty?.room_data ? JSON.parse(oneproperty?.room_data) : [],
+  );
+  const [video, setVideo] = useState(
+    oneproperty?.video ? oneproperty?.video : '',
+  );
+  const [views, setViews] = useState(
+    oneproperty?.views ? oneproperty?.views : '',
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showAvailableDatePicker, setShowAvailableDatePicker] = useState(false);
-  const [car_parking_close, setCar_parking_close] = useState('');
-  const [car_parking_open, setCar_parking_open] = useState('');
+  const [car_parking_close, setCar_parking_close] = useState(
+    oneproperty?.car_parking_close ? oneproperty?.car_parking_close : '',
+  );
+  const [car_parking_open, setCar_parking_open] = useState(
+    oneproperty?.car_parking_open ? oneproperty?.car_parking_open : '',
+  );
 
   // disild page number
   const [pageNumber, setPageNumber] = useState(1);
 
-  const [roomType, setRoomType] = useState('');
-  const [numberOfRooms, setNumberOfRooms] = useState('');
-  const [roomPrice, setRoomPrice] = useState('');
+  const [roomType, setRoomType] = useState(
+    oneproperty?.roomType ? oneproperty?.roomType : '',
+  );
+  const [numberOfRooms, setNumberOfRooms] = useState(
+    oneproperty?.numberOfRooms ? oneproperty?.numberOfRooms : '',
+  );
+  const [roomPrice, setRoomPrice] = useState(
+    oneproperty?.roomPrice ? oneproperty?.roomPrice : '',
+  );
   const [addRoomDataActive, setAddRoomDataActive] = useState(false);
-  const [make_display_image, setMake_display_image] = useState('');
+  const [make_display_image, setMake_display_image] = useState(
+    oneproperty?.make_display_image ? oneproperty?.make_display_image : '',
+  );
+
 
   // scrollView refrence
   const scrollRef = useRef();
@@ -390,6 +527,13 @@ const Sell = ({navigation}) => {
 
     dispatch(addNewpropertie(formdata));
     navigation.dispatch(navigation.replace('HomePage'));
+  }
+  if (loading) {
+    return (
+      <View>
+        <ActivityIndicator size={20} />
+      </View>
+    );
   }
 
   return (
@@ -771,7 +915,9 @@ const Sell = ({navigation}) => {
                       style={styles.dateShowCantainer}
                       onPress={() => setShowAvailableDatePicker(true)}>
                       <Text style={{color: '#000'}}>
-                        {available_from?available_from:new Date().toDateString()}
+                        {available_from
+                          ? available_from
+                          : new Date().toDateString()}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -1032,7 +1178,7 @@ const Sell = ({navigation}) => {
                       <TouchableOpacity
                         style={styles.dateShowCantainer}
                         onPress={() => setShowDatePicker(true)}>
-                        <Text style={{color:"#000"}}>{possession_date}</Text>
+                        <Text style={{color: '#000'}}>{possession_date}</Text>
                       </TouchableOpacity>
                     </View>
                     <Modal
@@ -1844,7 +1990,8 @@ const Sell = ({navigation}) => {
                 <Button title="Select video" onPress={() => pickUpvideo()} />
               </View>
             </View>
-            <View>
+            {console.log(images[0].images)}
+            {/* <View>
               {images &&
                 images?.map((item, idx) => {
                   return (
@@ -1859,7 +2006,9 @@ const Sell = ({navigation}) => {
                         <CustomRadioButton
                           label={'Cover Photo'}
                           selected={
-                            make_display_image == item?.uri.split('/').pop()
+                            make_display_image
+                              ? make_display_image == item?.uri.split('/').pop()
+                              : ''
                           }
                           onSelect={() =>
                             setMake_display_image(item?.uri.split('/').pop())
@@ -1890,7 +2039,7 @@ const Sell = ({navigation}) => {
                     </View>
                   );
                 })}
-            </View>
+            </View> */}
             <View style={{marginVertical: 20}}>
               <Text style={{fontSize: 12, color: '#000'}}>
                 ( Please upload property images less than 15 images)
@@ -1933,7 +2082,7 @@ const Sell = ({navigation}) => {
   );
 };
 
-export default Sell;
+export default EdtProperty;
 
 const styles = StyleSheet.create({
   gap: {

@@ -1,20 +1,30 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
-import { Picker } from "@react-native-picker/picker";
-import { AntDesign, Entypo } from "@expo/vector-icons";
-import Inputrange from "./Inputerange";
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Picker} from '@react-native-picker/picker';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
+import Inputrange from './Inputerange';
 
-const PropertySelector = ({ options, propValue, onValueChange, disable }) => {
+const PropertySelector = ({
+  options,
+  propValue,
+  propName,
+  onValueChange,
+  disable = true,
+}) => {
   return (
     <View style={styles.propertySelector}>
-      <Text style={styles.pickerTitle}>Property Type</Text>
+      <Text style={styles.pickerTitle}>{propName}</Text>
       <View style={styles.propertySelectorContainer}>
         <Picker
           selectedValue={propValue}
-          style={{ width: 150, marginTop: -10 }}
+          style={{
+            width: 150,
+            marginTop: -10,
+            color: !disable ? '#ccc' : '#000',
+          }}
           onValueChange={onValueChange}
-          enabled={disable}
-        >
+          enabled={disable}>
           {options.map((option, Filter) => (
             <Picker.Item
               key={Filter}
@@ -28,14 +38,15 @@ const PropertySelector = ({ options, propValue, onValueChange, disable }) => {
   );
 };
 
-const Filter = ({ max_price, min_price, property_type, callback, title }) => {
+const Filter = ({max_price, min_price, property_type, callback, title}) => {
   const [filterContainerOn, setFilterContainerOn] = useState(false);
-  const [property1, setProperty1] = useState("");
+  const [property1, setProperty1] = useState('');
   const [minMaxValue, setMinMaxValue] = useState({
     min: min_price,
     max: max_price,
   });
 
+  console.log('fliter');
   useEffect(() => {
     setTimeout(() => {
       callback({
@@ -43,22 +54,24 @@ const Filter = ({ max_price, min_price, property_type, callback, title }) => {
         min: minMaxValue.min,
         max: minMaxValue.max,
       });
-    }, 1000);
+    }, 1200);
   }, [property1, minMaxValue]);
 
   const property2Options = [
-    { label: "All", value: "" },
-    ...property_type.map((item) => {
-      return { label: item, value: item };
+    {label: 'All', value: ''},
+    ...property_type.map(item => {
+      return {label: item, value: item};
     }),
   ];
 
   useEffect(() => {
-    setMinMaxValue({ min: min_price, max: max_price });
+    setMinMaxValue({min: min_price, max: max_price});
   }, [max_price, min_price]);
 
   function formatNumber(number = 0) {
     if (number) {
+      console.log('number');
+      console.log(number);
       const abbreviations = {
         K: 1000,
         M: 1000000,
@@ -75,7 +88,7 @@ const Filter = ({ max_price, min_price, property_type, callback, title }) => {
 
       return number.toString();
     }
-    return " ";
+    return ' ';
   }
 
   return (
@@ -83,8 +96,7 @@ const Filter = ({ max_price, min_price, property_type, callback, title }) => {
       <View style={styles.filterTextCaonteiner}>
         {!filterContainerOn ? (
           <TouchableOpacity
-            onPress={() => setFilterContainerOn(!filterContainerOn)}
-          >
+            onPress={() => setFilterContainerOn(!filterContainerOn)}>
             <Text style={styles.filterText}>
               <AntDesign name="filter" size={20} color="black" />
               filter
@@ -92,10 +104,14 @@ const Filter = ({ max_price, min_price, property_type, callback, title }) => {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            onPress={() => setFilterContainerOn(!filterContainerOn)}
-          >
+            onPress={() => setFilterContainerOn(!filterContainerOn)}>
             <Text style={styles.filterText}>
-              <Entypo name="cross" style={{padding:10}} size={25} color="black" />
+              <Entypo
+                name="cross"
+                style={{padding: 10}}
+                size={25}
+                color="black"
+              />
             </Text>
           </TouchableOpacity>
         )}
@@ -104,22 +120,25 @@ const Filter = ({ max_price, min_price, property_type, callback, title }) => {
         <View style={styles.filterMainContainer}>
           <View style={styles.filterMaxMinContainer}>
             <PropertySelector
-              propName="Property 2"
-              options={[{ label: title, value: title }]}
+              propName="Property for"
+              options={[{label: title, value: title}]}
               propValue={property1}
               disable={false}
-              onValueChange={(value) => setProperty1(value)}
+              onValueChange={value => setProperty1(value)}
             />
             <PropertySelector
-              propName="Property 2"
+              propName="Property type"
+              title=""
               options={property2Options}
               propValue={property1}
-              onValueChange={(value) => setProperty1(value)}
+              onValueChange={value => setProperty1(value)}
             />
           </View>
           <View style={styles.MaxMinMainContainer}>
             <View style={styles.minMaxValueContainer}>
               <Text style={styles.minmaxTitle}>
+                {console.log("formatNumber(minMaxValue.min)")}
+                {console.log(formatNumber(minMaxValue.min))}
                 Min {formatNumber(minMaxValue.min)}
               </Text>
               <Text style={styles.minmaxTitle}>
@@ -129,7 +148,7 @@ const Filter = ({ max_price, min_price, property_type, callback, title }) => {
             <Inputrange
               min={Number(min_price)}
               max={Number(max_price)}
-              onValueChange={(value) => setMinMaxValue(value)}
+              onValueChange={value => setMinMaxValue(value)}
             />
           </View>
         </View>
@@ -140,23 +159,23 @@ const Filter = ({ max_price, min_price, property_type, callback, title }) => {
 
 const styles = StyleSheet.create({
   filtermainCaonteiner: {
-    position: "absolute",
+    position: 'absolute',
     zIndex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     right: 0,
     marginLeft: 10,
   },
   filterMainContainer: {
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
     // backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 1, height: 3 },
+    shadowColor: '#000',
+    shadowOffset: {width: 1, height: 3},
     borderWidth: 0.5,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 2,
@@ -164,15 +183,16 @@ const styles = StyleSheet.create({
   filterTextCaonteiner: {
     paddingVertical: 8,
     borderBottomWidth: 0.5,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     marginTop: 5,
   },
   filterText: {
     fontSize: 18,
-    fontWeight: "bold",
-    textTransform: "capitalize",
-    textAlign: "right",
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
+    textAlign: 'right',
     marginRight: 16,
+    color: '#000',
   },
   propertySelector: {
     flex: 2,
@@ -181,39 +201,41 @@ const styles = StyleSheet.create({
     height: 40,
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 8,
     paddingVertical: 5,
     paddingHorizontal: 8,
     fontSize: 14,
   },
   filterMaxMinContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
     gap: 20,
     padding: 15,
   },
   propertySelectorContainer: {
     height: 40,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 8,
   },
   pickerTitle: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 5,
+    color: '#000',
   },
   minMaxValueContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginHorizontal: 20,
     marginVertical: 8,
   },
   minmaxTitle: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
+    color:"#000"
   },
 });
 export default Filter;
