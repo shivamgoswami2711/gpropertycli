@@ -25,7 +25,7 @@ const Home = ({navigation}) => {
 
   useEffect(() => {
     const type = ['sell', 'rent'];
-    type.forEach(type => dispatch(propertyHome(type)));
+     type.forEach(type => dispatch(propertyHome(type)));
   }, [dispatch]);
 
   const renderFooter = useCallback(() => {
@@ -51,13 +51,6 @@ const Home = ({navigation}) => {
           <Text style={{fontSize: 16, color: '#ff9e3d'}}>Uploading......</Text>
         </View>
       )}
-      <View style={styles.addNewButtonContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Sell')}
-          style={styles.addNewButton}>
-          <Icon name="plus" size={30} color="#900" />
-        </TouchableOpacity>
-      </View>
       <ScrollView>
         <View style={styles.container}>
           <Image source={skyline} style={styles.backgroundImage} />
@@ -81,7 +74,7 @@ const Home = ({navigation}) => {
                   <Text style={styles.menuTitle}>{`Rent \nproperty`}</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Sell')}>
                 <View style={styles.menuContainer}>
                   <Image source={housesale} style={styles.menuIcon} />
                   <Text style={styles.menuTitle}>{`Sell \nproperty`}</Text>
@@ -137,7 +130,7 @@ const Home = ({navigation}) => {
             />
           </View>
         </View>
-        <View style={[styles.container, {height: 150}]}>
+        <View style={[styles.container, {height: 120}]}>
           <Image
             source={{uri: 'https://gpropertypay.com/public/assets/footer.jpg'}}
             style={styles.backgroundImage}
@@ -219,30 +212,5 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     color: '#000',
     textTransform: 'capitalize',
-  },
-  addNewButtonContainer: {
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontWeight: 'bold',
-    position: 'absolute',
-    right: 30,
-    bottom: 50,
-    zIndex: 1,
-  },
-  addNewButton: {
-    width: 65,
-    height: 65,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {width: 1, height: 3},
-    borderWidth: 0.5,
-    borderColor: '#ccc',
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
 });

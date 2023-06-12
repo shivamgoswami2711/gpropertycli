@@ -1,5 +1,12 @@
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Alert
+} from 'react-native';
+import React, {useState} from 'react';
 import CustomRadioButton from './CustomRadioButton';
 import MapScreen from './Mapscreen';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
@@ -11,13 +18,17 @@ const TypeOfProperty = ({
   setPropertyFor,
   setPropertyType,
   setAdded_by_type,
+  location,
   setLat,
   setLong,
+  setLocation,
   setPageNumber,
   scrollRef,
 }) => {
+  const [locationData, setLocationData] = useState(null);
+  const [region, setRegion] = useState(null);
   return (
-    <View>
+    <View style={{marginBottom: 70}}>
       <Text style={styles.heading}>I want to</Text>
       <View style={styles.radioCaontainer}>
         <CustomRadioButton
@@ -126,44 +137,72 @@ const TypeOfProperty = ({
           <Text style={{width: 70}}></Text>
         </View>
       </View>
-      <Text style={styles.heading}>Location?</Text>
-      <View style={{height: 500, marginHorizontal: 20}}>
-        <GooglePlacesAutocomplete
-          placeholder="Search"
-          textInputProps={{
-            placeholderTextColor: '#000',
-            returnKeyType: 'search user location',
-            color: '#000',
+
+      <Text style={styles.heading}>add address?</Text>
+      <View>
+        <ScrollView
+          style={{marginHorizontal: 20, flexGrow: 1}}
+          horizontal={true}
+          keyboardShouldPersistTaps={'always'}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            flexDirection: 'column',
+            justifyContent: 'space-around',
+            width: '100%',
           }}
-          styles={{
-            container: {
-              flex: 0,
-              position: 'absolute',
-              width: '100%',
-              zIndex: 1,
-            },
-            listView: {backgroundColor: 'white', color: '#000'},
-          }}
-          onPress={(data, details = null) => {
-            // Handle the selected place
-            // navigation.navigate('properties')
-            console.log(data);
-          }}
-          listEmptyComponent={() => (
-            <View style={{flex: 1}}>
-              <Text>No results were found</Text>
-            </View>
-          )}
-          textInputStyle={{
-            color: 'black',
-          }}
-          query={{
-            key: 'AIzaSyDxEmw9qvtFiT7LK8GbfLqyPgv3xN7YFZs',
-            language: 'en', // Change language if desired
-          }}
-        />
+          nestedScrollEnabled={true}>
+          <GooglePlacesAutocomplete
+            placeholder="Search"
+            listViewDisplayed={false}
+            keepResultsAfterBlur={true}
+            fetchDetails={true}
+            textInputProps={{
+              placeholderTextColor: '#000',
+              color: '#000',
+            }}
+            onPress={(data, details = null) => {
+              setLocation(details.formatted_address);
+              setLat(details.geometry.location.lat);
+              setLong(details.geometry.location.lng);
+              // setLocationData({
+              //   latitude: details.geometry.location.lat,
+              //   longitude: details.geometry.location.lng,
+              // });
+              setRegion({
+                latitude: details.geometry.location.lat,
+                longitude: details.geometry.location.lng,
+                latitudeDelta: 0.00922,
+                longitudeDelta: 0.09421,
+              });
+            }}
+            renderRow={rowData => {
+              const title = rowData.structured_formatting.main_text;
+              const address = rowData.structured_formatting.secondary_text;
+              return (
+                <View>
+                  <Text style={{fontSize: 14, color: '#000'}}>{title}</Text>
+                  <Text style={{fontSize: 14, color: '#000'}}>{address}</Text>
+                </View>
+              );
+            }}
+            query={{
+              key: 'AIzaSyDxEmw9qvtFiT7LK8GbfLqyPgv3xN7YFZs',
+              language: 'en', // Change language if desired
+            }}
+          />
+        </ScrollView>
       </View>
-      <MapScreen setLat={setLat} setLong={setLong} />
+
+      <Text style={[styles.heading,{marginBottom:0}]}>Location?</Text>
+      <Text style={{color:"#000",marginLeft:10}}>(tap and select your property)</Text>
+      <MapScreen
+        setLat={setLat}
+        setLong={setLong}
+        location={locationData}
+        setLocation={setLocationData}
+        region={region}
+        setRegion={setRegion}
+      />
       <View style={styles.buttonCantainer}>
         <TouchableOpacity
           style={styles.Button}
@@ -172,7 +211,13 @@ const TypeOfProperty = ({
               y: 0,
               animated: true,
             });
-            setPageNumber(2);
+            if(propertyFor && propertyType && location){
+              setPageNumber(2);
+            }else{
+              if(!propertyFor) return Alert.alert("please select sell or rent ")
+              if(!propertyType) return Alert.alert("please select property type")
+              if(!location) return Alert.alert("please add address")
+            }
           }}>
           <Text
             style={{textTransform: 'capitalize', color: '#fff', fontSize: 18}}>

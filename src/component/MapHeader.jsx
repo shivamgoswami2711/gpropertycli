@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React,{memo} from 'react';
 import MapView, {Marker} from 'react-native-maps';
 const WIDTH = Dimensions.get('window').width;
 import { StackActions } from '@react-navigation/native';
@@ -11,6 +11,10 @@ const MapHeader = ({title, coordinates = [], navigation}) => {
       <View style={styles.mapContainer}>
         <MapView
           style={styles.map}
+          zoomControlEnabled={true}
+          zoomTapEnabled={true}
+          cacheEnabled={true}
+          loadingEnabled={true}
           region={{
             latitude: 22.809754, // Replace with the latitude of the point
             longitude: 78.321457, // Replace with the desired longitude
@@ -39,7 +43,7 @@ const MapHeader = ({title, coordinates = [], navigation}) => {
   );
 };
 
-export default MapHeader;
+export default memo(MapHeader);
 
 const styles = StyleSheet.create({
   mapContainer: {

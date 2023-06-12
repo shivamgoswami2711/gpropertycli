@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -36,23 +37,43 @@ const DrawerHeader = () => {
         <Entypo name="menu" size={35} color="black" />
       </TouchableOpacity>
       {isSearchOpen ? (
-        <TextInput placeholder="search..." placeholderTextColor={'#000'} />
-      ) : (
-        <View style={{height: '100%'}}>
-          <GooglePlacesAutocomplete
-            placeholder="Search"
-            onPress={(data, details = null) => {
-              // Handle the selected place
-              // navigation.navigate('properties')
-              console.log(data);
+        <View>
+          <ScrollView
+            style={{flex: 1}}
+            horizontal={true}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{
+              flexDirection: 'column',
+              justifyContent: 'space-around',
+              width: '100%',
             }}
-            query={{
-              key: 'AIzaSyDxEmw9qvtFiT7LK8GbfLqyPgv3xN7YFZs',
-              language: 'en', // Change language if desired
-            }}
-          />
+            nestedScrollEnabled={true}>
+            <GooglePlacesAutocomplete
+              placeholder="Search......"
+              listViewDisplayed={false}
+              keepResultsAfterBlur={true}
+              textInputProps={{
+                placeholderTextColor: '#000',
+                color: '#000',
+              }}
+              onPress={(data, details = null) => {
+                console.log(details.description);
+                setLocation(details.description);
+              }}
+              listEmptyComponent={() => (
+                <View style={{flex: 1}}>
+                  <Text>No results were found</Text>
+                </View>
+              )}
+              query={{
+                key: 'AIzaSyDxEmw9qvtFiT7LK8GbfLqyPgv3xN7YFZs',
+                language: 'en', // Change language if desired
+              }}
+            />
+          </ScrollView>
         </View>
-        // <Text style={styles.title}>Gproperty</Text>
+      ) : (
+        <Text style={styles.title}>Gproperty</Text>
       )}
       <View style={styles.right}>
         <TouchableOpacity onPress={handleSearchToggle}>

@@ -110,7 +110,7 @@ const Post = ({route, navigation}) => {
   // }, [router]);
 
   useEffect(() => {
-    dispatch(oneproperty(postId));
+     dispatch(oneproperty(postId));
   }, [dispatch, postId]);
 
   // useEffect(() => {

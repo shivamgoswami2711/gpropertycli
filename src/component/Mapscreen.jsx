@@ -4,17 +4,21 @@ import {
   Dimensions,
   StyleSheet,
   PermissionsAndroid,
-  Alert
+  Alert,
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 
 const WIDTH = Dimensions.get('window').width;
 
-const MapScreen = ({setLat, setLong}) => {
-  const [location, setLocation] = useState(null);
-  const [region, setRegion] = useState(null);
-
+const MapScreen = ({
+  setLat,
+  setLong,
+  location,
+  setLocation,
+  region,
+  setRegion,
+}) => {
   useEffect(() => {
     getLocationAsync();
   }, []);
@@ -44,7 +48,7 @@ const MapScreen = ({setLat, setLong}) => {
           },
           error => {
             // See error code charts below.
-            Alert.alert(error.message)
+            Alert.alert(error.message);
           },
           {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
@@ -66,7 +70,7 @@ const MapScreen = ({setLat, setLong}) => {
       {location && region && (
         <MapView
           style={styles.map}
-          initialRegion={region}
+          region={region}
           onPress={handleMapPress}>
           <Marker
             coordinate={{

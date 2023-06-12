@@ -9,9 +9,10 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useRef, useState, useEffect, memo} from 'react';
 import TypeOfProperty from '../component/TypeOfProperty';
 import {
   BedroomsNumber,
@@ -22,6 +23,7 @@ import {
   RoomType,
   carpet_areaData,
   facing_road_width_inData,
+  imageType,
 } from '../Include/SellData';
 import CustomRadioButton from '../component/CustomRadioButton';
 import DatePicker from 'react-native-modern-datepicker';
@@ -30,7 +32,6 @@ import Video from 'react-native-video';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import {addNewpropertie} from '../../redux/actions/properties';
-
 // phone size width
 const WIDTH = Dimensions.get('window').width;
 
@@ -48,7 +49,14 @@ const Sell = ({navigation}) => {
 
   const userId = profile.id;
   useEffect(() => {
-    if (!userId) navigation.dispatch(navigation.push('Login'));
+    if (!userId) {
+      if (userId == undefined) {
+        Alert.alert('please check your internet connection');
+        navigation.navigate('Home');
+      } else {
+        navigation.dispatch(navigation.push('Login'));
+      }
+    }
   }, []);
 
   // all vareable
@@ -122,6 +130,8 @@ const Sell = ({navigation}) => {
   const [car_parking_close, setCar_parking_close] = useState('');
   const [car_parking_open, setCar_parking_open] = useState('');
 
+  const [image_type, setImage_type] = useState([]);
+
   // disild page number
   const [pageNumber, setPageNumber] = useState(1);
 
@@ -147,6 +157,12 @@ const Sell = ({navigation}) => {
   const RemoveRoomDetails = index => {
     const data = room_data.filter((_, idx) => idx !== index);
     setRoom_data(data);
+  };
+
+  const addImageType = (index, data) => {
+    let copyArray = [...image_type];
+    copyArray[index] = data;
+    setImage_type(copyArray);
   };
 
   const removeImg = index => {
@@ -252,7 +268,12 @@ const Sell = ({navigation}) => {
               y: 0,
               animated: true,
             });
-            setPageNumber(next);
+            if (saleable_area) {
+              setPageNumber(next);
+            } else {
+              if (!saleable_area)
+                return Alert.alert('saleable/rent check is required');
+            }
           }}>
           <Text
             style={{
@@ -265,7 +286,7 @@ const Sell = ({navigation}) => {
         </TouchableOpacity>
       </View>
     ),
-    [setPageNumber, pageNumber],
+    [setPageNumber, pageNumber,saleable_area],
   );
 
   const OnAvailableDateslection = date => {
@@ -350,7 +371,7 @@ const Sell = ({navigation}) => {
     formdata.append('special_requirement', special_requirement);
     formdata.append('other_facility', '');
 
-    if (!room_data) {
+    if (room_data.length) {
       room_data.map(item => {
         formdata.append('room_data[room_type][]', item.room);
         formdata.append('room_data[no_of_rooms][]', item.numberOfRooms);
@@ -369,7 +390,16 @@ const Sell = ({navigation}) => {
 
     formdata.append('car_parking_open', car_parking_open);
 
-    formdata.append('image_type', []);
+    images.map((_, index) => {
+      formdata.append(
+        'image_type[]',
+        image_type[index] ? image_type[index] : '',
+      );
+    });
+    formdata.append(
+      'make_display_image',
+      make_display_image ? images[0]?.fileName : '',
+    );
 
     images &&
       images.map(item => {
@@ -405,12 +435,14 @@ const Sell = ({navigation}) => {
             setAdded_by_type={setAdded_by_type}
             setLat={setLat}
             setLong={setLong}
+            location={location}
+            setLocation={setLocation}
             setPageNumber={setPageNumber}
             scrollRef={scrollRef}
           />
         )}
         {pageNumber == 2 && (
-          <View>
+          <View style={{marginBottom: 70}}>
             {property_type !== typeofName[7] &&
               property_type !== typeofName[8] && (
                 <View>
@@ -644,6 +676,38 @@ const Sell = ({navigation}) => {
             <View>
               <Text style={styles.heading}>What is the expected price</Text>
               <View>
+                {property_type == typeofName[7] ||
+                property_type == typeofName[8] ? (
+                  <View>
+                    <Text style={styles.label}>Saleable area</Text>
+                    <View style={styles.Saleablemaincontainer}>
+                      <TextInput
+                        placeholderTextColor={'#000'}
+                        style={styles.saleableAreaInput}
+                        keyboardType="numeric"
+                        value={saleable_area.toString()}
+                        onChangeText={setSaleable_area}
+                        placeholder="e.g., 123"
+                      />
+                      <View style={styles.Saleablecontainer}>
+                        <Picker
+                          style={styles.Saleablepicker}
+                          selectedValue={saleable_area_size_in}
+                          onValueChange={setSaleable_area_size_in}>
+                          {sizeData.map(({label, value}) => (
+                            <Picker.Item
+                              key={label}
+                              label={label}
+                              value={value}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    </View>
+                  </View>
+                ) : (
+                  <View></View>
+                )}
                 {property_for == 'sell' ? (
                   <View>
                     <View
@@ -771,7 +835,9 @@ const Sell = ({navigation}) => {
                       style={styles.dateShowCantainer}
                       onPress={() => setShowAvailableDatePicker(true)}>
                       <Text style={{color: '#000'}}>
-                        {available_from?available_from:new Date().toDateString()}
+                        {available_from
+                          ? available_from
+                          : new Date().toDateString()}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -779,7 +845,10 @@ const Sell = ({navigation}) => {
                     animationType="slide"
                     transparent={true}
                     visible={showAvailableDatePicker}>
-                    <View style={styles.DatePickerContainer}>
+                    <TouchableOpacity
+                      TouchableOpacity={0}
+                      onPress={() => setShowAvailableDatePicker(false)}
+                      style={styles.DatePickerContainer}>
                       <DatePicker
                         mode="calendar"
                         onSelectedChange={OnAvailableDateslection}
@@ -802,8 +871,7 @@ const Sell = ({navigation}) => {
                           elevation: 5,
                         }}
                       />
-                      <View></View>
-                    </View>
+                    </TouchableOpacity>
                   </Modal>
                 </View>
               )}
@@ -812,7 +880,7 @@ const Sell = ({navigation}) => {
           </View>
         )}
         {pageNumber == 3 && (
-          <View>
+          <View style={{marginBottom: 70}}>
             {property_type !== typeofName[7] &&
               property_type !== typeofName[8] && (
                 <View>
@@ -1032,14 +1100,17 @@ const Sell = ({navigation}) => {
                       <TouchableOpacity
                         style={styles.dateShowCantainer}
                         onPress={() => setShowDatePicker(true)}>
-                        <Text style={{color:"#000"}}>{possession_date}</Text>
+                        <Text style={{color: '#000'}}>{possession_date}</Text>
                       </TouchableOpacity>
                     </View>
                     <Modal
                       animationType="slide"
                       transparent={true}
                       visible={showDatePicker}>
-                      <View style={styles.DatePickerContainer}>
+                      <TouchableOpacity
+                        TouchableOpacity={0}
+                        onPress={() => setShowDatePicker(false)}
+                        style={styles.DatePickerContainer}>
                         <DatePicker
                           mode="calendar"
                           onSelectedChange={OnDateslection}
@@ -1063,7 +1134,7 @@ const Sell = ({navigation}) => {
                           }}
                         />
                         <View></View>
-                      </View>
+                      </TouchableOpacity>
                     </Modal>
                   </View>
                 </View>
@@ -1093,7 +1164,7 @@ const Sell = ({navigation}) => {
         )}
 
         {property_type !== typeofName[7] && property_type !== typeofName[8] && (
-          <View>
+          <View style={{marginBottom: 70}}>
             {pageNumber == 4 && (
               <View>
                 <View>
@@ -1808,7 +1879,7 @@ const Sell = ({navigation}) => {
           </View>
         )}
         {pageNumber == 8 && (
-          <View>
+          <View style={{marginBottom: 70}}>
             <View style={styles.videoPreviewCantainer}>
               {video && (
                 <Video
@@ -1848,44 +1919,62 @@ const Sell = ({navigation}) => {
               {images &&
                 images?.map((item, idx) => {
                   return (
-                    <View key={idx} style={styles.imagescantainer}>
-                      <Image
-                        style={styles.propertyPic}
-                        source={{
-                          uri: item?.uri,
-                        }}
-                      />
-                      <View>
-                        <CustomRadioButton
-                          label={'Cover Photo'}
-                          selected={
-                            make_display_image == item?.uri.split('/').pop()
-                          }
-                          onSelect={() =>
-                            setMake_display_image(item?.uri.split('/').pop())
-                          }
+                    <View key={idx} style={styles.imagemaincaintainer}>
+                      <View style={styles.imagescantainer}>
+                        <Image
+                          style={styles.propertyPic}
+                          source={{
+                            uri: item?.uri,
+                          }}
                         />
-                        <TouchableOpacity
-                          onPress={() => removeImg(idx)}
-                          style={{
-                            backgroundColor: '#2196f3',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            borderRadius: 8,
-                            marginVertical: 20,
-                            marginHorizontal: 30,
-                            height: 50,
-                          }}>
-                          <Text
+                        <View>
+                          <CustomRadioButton
+                            label={'Cover Photo'}
+                            selected={
+                              make_display_image == item?.uri.split('/').pop()
+                            }
+                            onSelect={() =>
+                              setMake_display_image(item?.uri.split('/').pop())
+                            }
+                          />
+                          <TouchableOpacity
+                            onPress={() => removeImg(idx)}
                             style={{
-                              padding: 10,
-                              textTransform: 'capitalize',
-                              color: '#fff',
-                              fontSize: 18,
+                              backgroundColor: '#2196f3',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              borderRadius: 8,
+                              marginVertical: 20,
+                              marginHorizontal: 30,
+                              height: 50,
                             }}>
-                            Remove
-                          </Text>
-                        </TouchableOpacity>
+                            <Text
+                              style={{
+                                padding: 10,
+                                textTransform: 'capitalize',
+                                color: '#fff',
+                                fontSize: 18,
+                              }}>
+                              Remove
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                      <View style={[styles.Flooringcontainer, {marginTop: 20}]}>
+                        <Picker
+                          style={styles.picker}
+                          selectedValue={image_type[idx] ? image_type[idx] : ''}
+                          onValueChange={pickerData =>
+                            addImageType(idx, pickerData)
+                          }>
+                          {imageType.map(({label, value}) => (
+                            <Picker.Item
+                              key={label}
+                              label={label}
+                              value={value}
+                            />
+                          ))}
+                        </Picker>
                       </View>
                     </View>
                   );
@@ -1933,7 +2022,8 @@ const Sell = ({navigation}) => {
   );
 };
 
-export default Sell;
+export default memo
+(Sell);
 
 const styles = StyleSheet.create({
   gap: {
@@ -2111,6 +2201,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     columnGap: 10,
+  },
+  imagemaincaintainer: {
     padding: 10,
     borderRadius: 8,
     marginBottom: 4,

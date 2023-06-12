@@ -48,7 +48,7 @@ const Filter = ({max_price, min_price, property_type, callback, title}) => {
 
   console.log('fliter');
   useEffect(() => {
-    setTimeout(() => {
+     setTimeout(() => {
       callback({
         property_type: property1,
         min: minMaxValue.min,
@@ -65,7 +65,7 @@ const Filter = ({max_price, min_price, property_type, callback, title}) => {
   ];
 
   useEffect(() => {
-    setMinMaxValue({min: min_price, max: max_price});
+     setMinMaxValue({min: min_price, max: max_price});
   }, [max_price, min_price]);
 
   function formatNumber(number = 0) {

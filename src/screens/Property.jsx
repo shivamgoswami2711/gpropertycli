@@ -57,6 +57,9 @@ const PropertyListComponet = memo(({item, navigation}) => {
           <View style={styles.videoContainer}>
             <MapView
               style={styles.map}
+              scrollEnabled={false}
+              zoomTapEnabled={true}
+              zoomControlEnabled={true}
               region={{
                 latitude: parseFloat(item.lat),
                 longitude: parseFloat(item.long),
@@ -111,9 +114,11 @@ const PropertyListComponet = memo(({item, navigation}) => {
 
 const Property = ({route, navigation}) => {
   const {property_for} = route.params;
+  const {address} = route.params;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState({});
   const propertyData = useSelector(state => state.property);
+  const [searchAddress, setSearchAddress] = useState(address);
   const [currentPage, setCurrentPage] = useState(
     propertyData?.current_page || 1,
   );
@@ -123,7 +128,6 @@ const Property = ({route, navigation}) => {
   }, [dispatch, filter, property_for]);
 
   const loadMoreData = () => {
-    console.log('load moer');
     if (propertyData?.last_page > currentPage) {
       dispatch(propertiespage(currentPage + 1, filter, property_for));
       setCurrentPage(currentPage + 1);
@@ -139,8 +143,6 @@ const Property = ({route, navigation}) => {
       </View>
     );
   };
-
-  console.log(navigation.dispatch);
 
   return (
     <View>

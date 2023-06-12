@@ -33,13 +33,19 @@ const Profile = ({navigation}) => {
   const userId = profile.id;
 
   useEffect(() => {
-    if (!userId) navigation.dispatch(navigation.push('Login'));
+    if (!userId) {
+      if (userId == undefined) {
+        Alert.alert('please check your internet connection');
+        navigation.navigate('Home')
+      } else {
+        navigation.dispatch(navigation.push('Login'));
+      }
+    }
   }, [profile]);
 
   useEffect(() => {
-    console.log('propertyadded');
     dispatch(userproperty({id: userId, uid: profile.uid}));
-  }, [dispatch]);
+  }, [dispatch,navigation]);
 
   const [profileModule, setProfileModule] = useState(false);
   const [name, setName] = useState(profile ? profile.first_name : '');
@@ -91,7 +97,7 @@ const Profile = ({navigation}) => {
   }
 
   function editpropertyFunc(id) {
-    dispatch(oneForUpdateproperty({id: 304, uid: profile.uid}));
+    dispatch(oneForUpdateproperty({id, uid: profile.uid}));
     navigation.dispatch(navigation.push(`EdtProperty`));
   }
 
@@ -156,7 +162,7 @@ const Profile = ({navigation}) => {
       </View>
       <FlatList
         data={propertyadded}
-        style={{marginBottom:70}}
+        style={{marginBottom: 70}}
         renderItem={({item, index}) => (
           <TouchableOpacity
             key={index}
@@ -194,7 +200,7 @@ const Profile = ({navigation}) => {
                 <TouchableOpacity onPress={() => showAlertforProperty(item.id)}>
                   <Entypo name="cross" size={30} color="#000" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => editpropertyFunc()}>
+                <TouchableOpacity onPress={() => editpropertyFunc(item.id)}>
                   <Text
                     style={{
                       color: '#000',
@@ -212,7 +218,7 @@ const Profile = ({navigation}) => {
       />
 
       <Modal visible={profileModule} transparent={true} animationType="slide">
-        <View style={styles.modalCantainer}>
+        <TouchableOpacity TouchableOpacity={0} style={styles.modalCantainer} onPress={()=>setProfileModule(false)}>
           <View style={styles.modalBottomCantainer}>
             <View>
               <View style={styles.profileImgCantainer}>
@@ -290,7 +296,7 @@ const Profile = ({navigation}) => {
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
