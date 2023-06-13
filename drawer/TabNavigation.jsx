@@ -124,6 +124,7 @@ const DrawerNavigation = ({navigation}) => {
                       }}
                       listViewDisplayed={false}
                       keepResultsAfterBlur={true}
+                      fetchDetails={true}
                       textInputProps={{
                         placeholderTextColor: '#000',
                         color: '#000',
@@ -131,16 +132,35 @@ const DrawerNavigation = ({navigation}) => {
                         borderColor: '#ccc',
                       }}
                       onPress={(data, details = null) => {
-                        setSearchAddressText(details.description);
+                        setSearchAddressText(details.name);
                         setOnSerachClick(false);
-                        navigation.navigate('Property', {
-                          property_for: 'rent',
-                          address: details.description,
-                        });
+                        setTimeout(() => {
+                          navigation.navigate('Property', {
+                            property_for: 'properties',
+                            address: details.name,
+                          });
+                        }, 70);
+                      }}
+                      renderRow={rowData => {
+                        const title = rowData.structured_formatting.main_text;
+                        const address =
+                          rowData.structured_formatting.secondary_text;
+                        return (
+                          <View>
+                            <Text style={{fontSize: 14, color: '#000'}}>
+                              {title}
+                            </Text>
+                            <Text style={{fontSize: 14, color: '#000'}}>
+                              {address}
+                            </Text>
+                          </View>
+                        );
                       }}
                       listEmptyComponent={() => (
                         <View style={{flex: 1}}>
-                          <Text>No results were found</Text>
+                          <Text style={{color: '#000'}}>
+                            No results were found
+                          </Text>
                         </View>
                       )}
                       query={{
@@ -172,7 +192,7 @@ const DrawerNavigation = ({navigation}) => {
                       <TouchableOpacity
                         // style={styles.cross}
                         onPress={() => setOnSerachClick(!onSerachClick)}>
-                        <Text>cencel</Text>
+                        <Text style={{color: '#000'}}>cancel</Text>
                       </TouchableOpacity>
                     </View>
                   )}
@@ -277,7 +297,7 @@ const DrawerNavigation = ({navigation}) => {
                   Profile
                 </Text>
                 <View>
-                  <TouchableOpacity onPress={()=>setLogoutModal(true)}>
+                  <TouchableOpacity onPress={() => setLogoutModal(true)}>
                     <Entypo
                       name="dots-three-vertical"
                       style={{padding: 10}}

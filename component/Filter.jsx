@@ -38,24 +38,33 @@ const PropertySelector = ({
   );
 };
 
-const Filter = ({max_price, min_price, property_type, callback, title}) => {
+const Filter = ({
+  max_price,
+  min_price,
+  property_type,
+  location,
+  callback,
+  title,
+}) => {
   const [filterContainerOn, setFilterContainerOn] = useState(false);
   const [property1, setProperty1] = useState('');
+  const [propertyFor, setPropertyFor] = useState('');
   const [minMaxValue, setMinMaxValue] = useState({
     min: min_price,
     max: max_price,
   });
-
-  console.log('fliter');
+  
   useEffect(() => {
-     setTimeout(() => {
+    setTimeout(() => {
       callback({
         property_type: property1,
+        propertyFor: propertyFor,
+        location,
         min: minMaxValue.min,
         max: minMaxValue.max,
       });
     }, 1200);
-  }, [property1, minMaxValue]);
+  }, [property1, minMaxValue, propertyFor, location]);
 
   const property2Options = [
     {label: 'All', value: ''},
@@ -65,13 +74,11 @@ const Filter = ({max_price, min_price, property_type, callback, title}) => {
   ];
 
   useEffect(() => {
-     setMinMaxValue({min: min_price, max: max_price});
+    setMinMaxValue({min: min_price, max: max_price});
   }, [max_price, min_price]);
 
   function formatNumber(number = 0) {
     if (number) {
-      console.log('number');
-      console.log(number);
       const abbreviations = {
         K: 1000,
         M: 1000000,
@@ -91,6 +98,12 @@ const Filter = ({max_price, min_price, property_type, callback, title}) => {
     return ' ';
   }
 
+  const property_forOption = [
+    {label: 'All', value: ''},
+    {label: 'Sell', value: 'sell'},
+    {label: 'Rent', value: 'rent'},
+  ];
+
   return (
     <View style={styles.filtermainCaonteiner}>
       <View style={styles.filterTextCaonteiner}>
@@ -99,7 +112,7 @@ const Filter = ({max_price, min_price, property_type, callback, title}) => {
             onPress={() => setFilterContainerOn(!filterContainerOn)}>
             <Text style={styles.filterText}>
               <AntDesign name="filter" size={20} color="black" />
-              filter
+              {/* filter */}
             </Text>
           </TouchableOpacity>
         ) : (
@@ -121,10 +134,10 @@ const Filter = ({max_price, min_price, property_type, callback, title}) => {
           <View style={styles.filterMaxMinContainer}>
             <PropertySelector
               propName="Property for"
-              options={[{label: title, value: title}]}
-              propValue={property1}
-              disable={false}
-              onValueChange={value => setProperty1(value)}
+              options={property_forOption}
+              propValue={propertyFor}
+              disable={title == 'properties'}
+              onValueChange={value => setPropertyFor(value)}
             />
             <PropertySelector
               propName="Property type"
@@ -137,8 +150,6 @@ const Filter = ({max_price, min_price, property_type, callback, title}) => {
           <View style={styles.MaxMinMainContainer}>
             <View style={styles.minMaxValueContainer}>
               <Text style={styles.minmaxTitle}>
-                {console.log("formatNumber(minMaxValue.min)")}
-                {console.log(formatNumber(minMaxValue.min))}
                 Min {formatNumber(minMaxValue.min)}
               </Text>
               <Text style={styles.minmaxTitle}>
@@ -192,6 +203,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     textAlign: 'right',
     marginRight: 16,
+    paddingLeft: 10,
     color: '#000',
   },
   propertySelector: {
@@ -235,7 +247,7 @@ const styles = StyleSheet.create({
   minmaxTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color:"#000"
+    color: '#000',
   },
 });
 export default Filter;

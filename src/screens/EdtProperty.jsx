@@ -42,7 +42,6 @@ const EdtProperty = ({route, navigation}) => {
   const {profile} = useSelector(state => state.user);
   const {loading, oneproperty} = useSelector(state => state.property);
 
-  console.log(oneproperty.property_for);
   // adding 1rk in bedroom picker data
   bedroomsNumber.push({
     value: '1RK',
@@ -65,46 +64,24 @@ const EdtProperty = ({route, navigation}) => {
   const [location, setLocation] = useState(oneproperty.location);
   const [bedrooms, setBedrooms] = useState(oneproperty.bedrooms);
   const [saleable_area, setSaleable_area] = useState(oneproperty.saleable_area);
-  const [saleable_area_size_in, setSaleable_area_size_in] = useState(
-    oneproperty.saleable_area_size_in,
-  );
+  const [saleable_area_size_in, setSaleable_area_size_in] = useState(oneproperty.saleable_area_size_in);
   const [carpet_area, setCarpet_area] = useState(oneproperty.carpet_area);
-  const [carpet_area_size_in, setCarpet_area_size_in] = useState(
-    oneproperty.carpet_area_size_in,
-  );
+  const [carpet_area_size_in, setCarpet_area_size_in] = useState(oneproperty.carpet_area_size_in);
   const [bathrooms, setBathrooms] = useState(oneproperty.bathrooms);
   const [balconies, setBalconies] = useState(oneproperty.balconies);
-  const [additional_facility, setAdditional_facility] = useState(
-    oneproperty.additional_facility,
-  );
-  const [expected_price, setExpected_price] = useState(
-    oneproperty.expected_price,
-  );
-  const [expected_price_in_sqft, setExpected_price_in_sqft] = useState(
-    oneproperty.expected_price_in_sqft,
-  );
+  const [additional_facility, setAdditional_facility] = useState(oneproperty.additional_facility);
+  const [expected_price, setExpected_price] = useState(oneproperty.expected_price);
+  const [expected_price_in_sqft, setExpected_price_in_sqft] = useState(oneproperty.expected_price_in_sqft);
   const [booking_price, setBooking_price] = useState(oneproperty.booking_price);
   const [monthly_rent, setMonthly_rent] = useState(oneproperty.monthly_rent);
-  const [security_deposit, setSecurity_deposit] = useState(
-    oneproperty.security_deposit,
-  );
-  const [maintance_charge, setMaintance_charge] = useState(
-    oneproperty.maintance_charge,
-  );
-  const [available_from, setAvailable_from] = useState(
-    oneproperty.available_from,
-  );
-  const [property_status, setProperty_status] = useState(
-    oneproperty.property_status,
-  );
+  const [security_deposit, setSecurity_deposit] = useState(oneproperty.security_deposit);
+  const [maintance_charge, setMaintance_charge] = useState(oneproperty.maintance_charge);
+  const [available_from, setAvailable_from] = useState(oneproperty.available_from);
+  const [property_status, setProperty_status] = useState(oneproperty.property_status);
   const [property_age, setProperty_age] = useState(oneproperty.property_age);
-  const [possession_date, setPossession_date] = useState(
-    oneproperty.possession_date,
-  );
+  const [possession_date, setPossession_date] = useState(oneproperty.possession_date);
   const [description, setDescription] = useState(oneproperty.description);
-  const [furnishing_status, setFurnishing_status] = useState(
-    oneproperty.furnishing_status,
-  );
+  const [furnishing_status, setFurnishing_status] = useState(oneproperty.furnishing_status);
   const [negotiable, setNegotiable] = useState('no');
   const [wardrobe, setWardrobe] = useState(oneproperty.wardrobe);
   const [beds, setBeds] = useState(oneproperty.beds);
@@ -113,53 +90,29 @@ const EdtProperty = ({route, navigation}) => {
   const [light, setLight] = useState(oneproperty.light);
   const [fan, setFan] = useState(oneproperty.fan);
   const [exhaust_fan, setExhaust_fan] = useState(oneproperty.exhaust_fan);
-  const [additional_room, setAdditional_room] = useState(
-    oneproperty.additional_room,
-  );
-  const [additional_furnishing, setAdditional_furnishing] = useState(
-    oneproperty.additional_furnishing,
-  );
+  const [additional_room, setAdditional_room] = useState(oneproperty.additional_room);
+  const [additional_furnishing, setAdditional_furnishing] = useState(oneproperty.additional_furnishing);
   const [floor, setFloor] = useState(oneproperty.floor);
   const [total_floor, setTotal_floor] = useState(oneproperty.total_floor);
   const [open_side, setOpen_side] = useState(oneproperty.open_side);
   const [facing_side, setFacing_side] = useState(oneproperty.facing_side);
-  const [facing_road_width, setFacing_road_width] = useState(
-    oneproperty.facing_road_width,
-  );
-  const [facing_road_width_in, setFacing_road_width_in] = useState(
-    oneproperty.facing_road_width_in,
-  );
+  const [facing_road_width, setFacing_road_width] = useState(oneproperty.facing_road_width);
+  const [facing_road_width_in, setFacing_road_width_in] = useState(oneproperty.facing_road_width_in);
   const [overlooking, setOverlooking] = useState(oneproperty.overlooking);
   const [ownershiptype, setOwnershiptype] = useState(oneproperty.ownershiptype);
   const [living_room, setLiving_room] = useState(oneproperty.living_room);
   const [kitchen, setKitchen] = useState(oneproperty.kitchen);
-  const [master_bedroom, setMaster_bedroom] = useState(
-    oneproperty.master_bedroom,
-  );
+  const [master_bedroom, setMaster_bedroom] = useState(oneproperty.master_bedroom);
   const [bathroom, setBathroom] = useState(oneproperty.bathroom);
   const [balcony, setBalcony] = useState(oneproperty.balcony);
   const [other_bedroom, setOther_bedroom] = useState(oneproperty.other_bedroom);
-  const [preferred_tenants, setPreferred_tenants] = useState(
-    oneproperty.preferred_tenants,
-  );
-  const [gender_preference, setGender_preference] = useState(
-    oneproperty.gender_preference,
-  );
-  const [maximum_tentants_allowed, setMaximum_tentants_allowed] = useState(
-    oneproperty.maximum_tentants_allowed,
-  );
-  const [work_preference, setWork_preference] = useState(
-    oneproperty.work_preference,
-  );
-  const [food_preference, setFood_preference] = useState(
-    oneproperty.food_preference,
-  );
-  const [expected_duration_of_stay, setExpected_duration_of_stay] = useState(
-    oneproperty.expected_duration_of_stay,
-  );
-  const [special_requirement, setSpecial_requirement] = useState(
-    oneproperty.special_requirement,
-  );
+  const [preferred_tenants, setPreferred_tenants] = useState(oneproperty.preferred_tenants);
+  const [gender_preference, setGender_preference] = useState(oneproperty.gender_preference);
+  const [maximum_tentants_allowed, setMaximum_tentants_allowed] = useState(oneproperty.maximum_tentants_allowed);
+  const [work_preference, setWork_preference] = useState(oneproperty.work_preference);
+  const [food_preference, setFood_preference] = useState(oneproperty.food_preference);
+  const [expected_duration_of_stay, setExpected_duration_of_stay] = useState(oneproperty.expected_duration_of_stay);
+  const [special_requirement, setSpecial_requirement] = useState(oneproperty.special_requirement);
   const [images, setImages] = useState(
     oneproperty.images ? JSON.parse(oneproperty.images) : [],
   );
@@ -170,12 +123,8 @@ const EdtProperty = ({route, navigation}) => {
   const [views, setViews] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showAvailableDatePicker, setShowAvailableDatePicker] = useState(false);
-  const [car_parking_close, setCar_parking_close] = useState(
-    oneproperty.car_parking_close,
-  );
-  const [car_parking_open, setCar_parking_open] = useState(
-    oneproperty.car_parking_open,
-  );
+  const [car_parking_close, setCar_parking_close] = useState(oneproperty.car_parking_close);
+  const [car_parking_open, setCar_parking_open] = useState(oneproperty.car_parking_open);
 
   // disild page number
   const [pageNumber, setPageNumber] = useState(1);
@@ -188,6 +137,82 @@ const EdtProperty = ({route, navigation}) => {
 
   // scrollView refrence
   const scrollRef = useRef();
+
+
+
+
+
+
+useEffect(() => {
+
+  setProperty_for(oneproperty.property_for)
+setLat(oneproperty.lat)
+setLong(oneproperty.long)
+setProperty_type(oneproperty.property_type)
+setAdded_by_type(oneproperty.added_by_type)
+setLocation(oneproperty.location)
+setBedrooms(oneproperty.bedrooms)
+setSaleable_area(oneproperty.saleable_area)
+setSaleable_area_size_in(oneproperty.saleable_area_size_in)
+setCarpet_area(oneproperty.carpet_area)
+setCarpet_area_size_in(oneproperty.carpet_area_size_in)
+setBathrooms(oneproperty.bathrooms)
+setBalconies(oneproperty.balconies)
+setAdditional_facility(oneproperty.additional_facility)
+setExpected_price(oneproperty.expected_price)
+setExpected_price_in_sqft(oneproperty.expected_price_in_sqft)
+setBooking_price(oneproperty.booking_price)
+setMonthly_rent(oneproperty.monthly_rent)
+setSecurity_deposit(oneproperty.security_deposit)
+setMaintance_charge(oneproperty.maintance_charge)
+setAvailable_from(oneproperty.available_from)
+setProperty_status(oneproperty.property_status)
+setProperty_age(oneproperty.property_age)
+setPossession_date(oneproperty.possession_date)
+setDescription(oneproperty.description)
+setFurnishing_status(oneproperty.furnishing_status)
+setWardrobe(oneproperty.wardrobe)
+setBeds(oneproperty.beds)
+setAc(oneproperty.ac)
+setTv(oneproperty.tv)
+setLight(oneproperty.light)
+setFan(oneproperty.fan)
+setExhaust_fan(oneproperty.exhaust_fan)
+setAdditional_room(oneproperty.additional_room)
+setAdditional_furnishing(oneproperty.additional_furnishing)
+setFloor(oneproperty.floor)
+setTotal_floor(oneproperty.total_floor)
+setOpen_side(oneproperty.open_side)
+setFacing_side(oneproperty.facing_side)
+setFacing_road_width(oneproperty.facing_road_width)
+setFacing_road_width_in(oneproperty.facing_road_width_in)
+setOverlooking(oneproperty.overlooking)
+setOwnershiptype(oneproperty.ownershiptype)
+setLiving_room(oneproperty.living_room)
+setKitchen(oneproperty.kitchen)
+setMaster_bedroom(oneproperty.master_bedroom)
+setBathroom(oneproperty.bathroom)
+setBalcony(oneproperty.balcony)
+setOther_bedroom(oneproperty.other_bedroom)
+setPreferred_tenants(oneproperty.preferred_tenants)
+setGender_preference(oneproperty.gender_preference)
+setMaximum_tentants_allowed(oneproperty.maximum_tentants_allowed)
+setWork_preference(oneproperty.work_preference)
+setFood_preference(oneproperty.food_preference)
+setExpected_duration_of_stay(oneproperty.expected_duration_of_stay)
+setSpecial_requirement(oneproperty.special_requirement)
+setVideo(oneproperty.video)
+setCar_parking_close(oneproperty.car_parking_close)
+setCar_parking_open(oneproperty.car_parking_open)
+setRoomPrice(oneproperty.roomPrice)
+setImages( oneproperty.images ? JSON.parse(oneproperty.images) : [],)
+setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
+}, [oneproperty])
+
+
+
+
+
 
   // adding data in roomDetail variable
   const AddRoomDetails = () => {

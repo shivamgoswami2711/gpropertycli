@@ -4,7 +4,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Alert
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import CustomRadioButton from './CustomRadioButton';
@@ -153,10 +153,14 @@ const TypeOfProperty = ({
           nestedScrollEnabled={true}>
           <GooglePlacesAutocomplete
             placeholder="Search"
+            ref={ref => {
+              ref?.setAddressText(location);
+            }}
             listViewDisplayed={false}
             keepResultsAfterBlur={true}
             fetchDetails={true}
             textInputProps={{
+              onChangeText: (text) => { setLocation(text) },
               placeholderTextColor: '#000',
               color: '#000',
             }}
@@ -164,10 +168,6 @@ const TypeOfProperty = ({
               setLocation(details.formatted_address);
               setLat(details.geometry.location.lat);
               setLong(details.geometry.location.lng);
-              // setLocationData({
-              //   latitude: details.geometry.location.lat,
-              //   longitude: details.geometry.location.lng,
-              // });
               setRegion({
                 latitude: details.geometry.location.lat,
                 longitude: details.geometry.location.lng,
@@ -193,8 +193,10 @@ const TypeOfProperty = ({
         </ScrollView>
       </View>
 
-      <Text style={[styles.heading,{marginBottom:0}]}>Location?</Text>
-      <Text style={{color:"#000",marginLeft:10}}>(tap and select your property)</Text>
+      <Text style={[styles.heading, {marginBottom: 0}]}>Location?</Text>
+      <Text style={{color: '#000', marginLeft: 10}}>
+        (tap and select your property)
+      </Text>
       <MapScreen
         setLat={setLat}
         setLong={setLong}
@@ -211,12 +213,14 @@ const TypeOfProperty = ({
               y: 0,
               animated: true,
             });
-            if(propertyFor && propertyType && location){
+            if (propertyFor && propertyType && location) {
               setPageNumber(2);
-            }else{
-              if(!propertyFor) return Alert.alert("please select sell or rent ")
-              if(!propertyType) return Alert.alert("please select property type")
-              if(!location) return Alert.alert("please add address")
+            } else {
+              if (!propertyFor)
+                return Alert.alert('please select sell or rent ');
+              if (!propertyType)
+                return Alert.alert('please select property type');
+              if (!location) return Alert.alert('please add address');
             }
           }}>
           <Text

@@ -9,9 +9,8 @@ export const buypage = (id, param) => async (dispatch) => {
   try {
     dispatch({ type: "buyPageRequest" });
     const data = await axios.get(`/buy?page=${id}`, { params });
-    console.log(params)
-    console.log(data)
-    // dispatch({ type: "buyPageSuccess", payload: data });
+
+    dispatch({ type: "buyPageSuccess", payload: data });
   } catch (error) {
     dispatch({
       type: "buyPageFail",

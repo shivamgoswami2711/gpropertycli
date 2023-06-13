@@ -1,51 +1,51 @@
-import { View, Text, InputText } from "react-native";
-import React from "react";
-import { Dimensions } from "react-native";
-import { StyleSheet } from "react-native";
+import {View, Text, InputText} from 'react-native';
+import React, {memo} from 'react';
+import {Dimensions} from 'react-native';
+import {StyleSheet} from 'react-native';
 import Animated, {
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 import {
+  GestureHandlerRootView,
   PanGestureHandler,
   TapGestureHandler,
-} from "react-native-gesture-handler";
+} from 'react-native-gesture-handler';
 
-const WIDTH = Dimensions.get("window").width - 60;
+const WIDTH = Dimensions.get('window').width - 60;
 const KNOW1 = 18;
 const MAXWIDTH = WIDTH - KNOW1 / 2 + 8;
 
-const Inputerange = ({ min, max, steps=1, onValueChange }) => {
+const Inputerange = ({min, max, steps = 100, onValueChange}) => {
   const knob1Value = useSharedValue(0);
   const knob2Value = useSharedValue(MAXWIDTH);
 
   const styleline = useAnimatedStyle(() => {
     return {
-      backgroundColor: "orange",
+      backgroundColor: 'orange',
       height: 8,
       borderRadius: 3,
       width: knob2Value.value - knob1Value.value,
-      transform: [{ translateX: knob1Value.value }],
+      transform: [{translateX: knob1Value.value}],
     };
   });
 
-  const handleTap = (event) => {
-    const { x } = event.nativeEvent;
+  const handleTap = event => {
+    const {x} = event.nativeEvent;
     x > MAXWIDTH / 2 ? (knob2Value.value = x) : (knob1Value.value = x);
     onValueChange({
       min:
         Math.round(
-          (min + (knob1Value.value / MAXWIDTH) * (max - min)) / steps
+          (min + (knob1Value.value / MAXWIDTH) * (max - min)) / steps,
         ) * steps,
       max:
         Math.round(
-          (min + (knob2Value.value / MAXWIDTH) * (max - min)) / steps
+          (min + (knob2Value.value / MAXWIDTH) * (max - min)) / steps,
         ) * steps,
     });
   };
-  
 
   const gestureHandler1 = useAnimatedGestureHandler({
     onStart: (_, ctx) => {
@@ -67,11 +67,11 @@ const Inputerange = ({ min, max, steps=1, onValueChange }) => {
       runOnJS(onValueChange)({
         min:
           Math.round(
-            (min + (knob1Value.value / MAXWIDTH) * (max - min)) / steps
+            (min + (knob1Value.value / MAXWIDTH) * (max - min)) / steps,
           ) * steps,
         max:
           Math.round(
-            (min + (knob2Value.value / MAXWIDTH) * (max - min)) / steps
+            (min + (knob2Value.value / MAXWIDTH) * (max - min)) / steps,
           ) * steps,
       });
     },
@@ -93,11 +93,11 @@ const Inputerange = ({ min, max, steps=1, onValueChange }) => {
       runOnJS(onValueChange)({
         min:
           Math.round(
-            (min + (knob1Value.value / MAXWIDTH) * (max - min)) / steps
+            (min + (knob1Value.value / MAXWIDTH) * (max - min)) / steps,
           ) * steps,
         max:
           Math.round(
-            (min + (knob2Value.value / MAXWIDTH) * (max - min)) / steps
+            (min + (knob2Value.value / MAXWIDTH) * (max - min)) / steps,
           ) * steps,
       });
     },
@@ -105,64 +105,65 @@ const Inputerange = ({ min, max, steps=1, onValueChange }) => {
 
   const knob1Style = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: knob1Value.value }],
+      transform: [{translateX: knob1Value.value}],
     };
   });
 
   const knob2Style = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: knob2Value.value }],
+      transform: [{translateX: knob2Value.value}],
     };
   });
 
   return (
     <View style={styles.conatiner}>
-      <TapGestureHandler onHandlerStateChange={handleTap}>
-        <View style={styles.track}>
+      <GestureHandlerRootView style={{flex: 1, width: '100%', height: '100%'}}>
+        <TapGestureHandler onHandlerStateChange={handleTap}>
           <View style={styles.track}>
-            <Animated.View style={styleline} />
+            <View style={styles.track}>
+              <Animated.View style={styleline} />
+            </View>
           </View>
-        </View>
-      </TapGestureHandler>
-      <PanGestureHandler onGestureEvent={gestureHandler1}>
-        <Animated.View style={[styles.knob, knob1Style]} />
-      </PanGestureHandler>
-      <PanGestureHandler onGestureEvent={gestureHandler2}>
-        <Animated.View style={[styles.knob, knob2Style]} />
-      </PanGestureHandler>
+        </TapGestureHandler>
+        <PanGestureHandler onGestureEvent={gestureHandler1}>
+          <Animated.View style={[styles.knob, knob1Style]} />
+        </PanGestureHandler>
+        <PanGestureHandler onGestureEvent={gestureHandler2}>
+          <Animated.View style={[styles.knob, knob2Style]} />
+        </PanGestureHandler>
+      </GestureHandlerRootView>
     </View>
   );
 };
 const styles = StyleSheet.create({
   conatiner: {
-    backgroundColor: "#eee",
+    backgroundColor: '#eee',
     paddingHorizontal: 20,
     borderRadius: 8,
     paddingVertical: 10,
     marginVertical: 10,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   track: {
     width: WIDTH,
     height: 8,
-    backgroundColor: "#cccbd2",
+    backgroundColor: '#cccbd2',
     borderRadius: 3,
   },
   knob: {
-    position: "absolute",
-    bottom: 5,
-    left: 18,
+    position: 'absolute',
+    bottom: -4,
+    padding:10,
+    left: 7,
     width: KNOW1,
     height: KNOW1,
     borderRadius: KNOW1 / 2,
-    borderColor: "#ff0000",
+    borderColor: '#ff0000',
     borderWidth: 1,
     padding: 3,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     marginLeft: -KNOW1 + 3,
-    marginTop: -KNOW1 + 3,
-    // marginLeft: WIDTH - 300,
   },
 });
 
-export default Inputerange;
+export default memo(Inputerange);

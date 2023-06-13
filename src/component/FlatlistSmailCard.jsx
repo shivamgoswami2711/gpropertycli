@@ -6,8 +6,6 @@ import profile from '../../assets/profile.jpg';
 import logo from '../../assets/logo.png';
 
 const FlatlistComponent = ({index, item, router}) => {
-  console.log(`${index} home list`);
-
   function formatDate() {
     const date = new Date(item.created_at);
 
@@ -33,13 +31,13 @@ const FlatlistComponent = ({index, item, router}) => {
     }
     return ' ';
   }
-  
+
   return (
     <TouchableOpacity
       style={{
         marginVertical: 8,
       }}
-      onPress={() => router.navigate(`Post`,{id:item.id})}>
+      onPress={() => router.navigate(`Post`, {id: item.id})}>
       <View key={index} style={styles.FlatlistComponent}>
         <View style={styles.profileContainer}>
           <Text style={styles.propertyType}>
@@ -51,7 +49,16 @@ const FlatlistComponent = ({index, item, router}) => {
             )}`}
             )
           </Text>
-          <Image style={styles.profilePic} source={profile} />
+          <Image
+            style={styles.profilePic}
+            source={
+              item.profile_image
+                ? {
+                    uri: `https://gpropertypay.com/public/uploads/${item.profile_image}`,
+                  }
+                : profile
+            }
+          />
         </View>
         <View style={styles.detailContainer}>
           {item.image ? (
@@ -69,7 +76,7 @@ const FlatlistComponent = ({index, item, router}) => {
               numberOfLines={5}
               ellipsizeMode="tail"
               style={styles.detailText}>
-                <EvilIcons name="location" size={13} color="#900" />
+              <EvilIcons name="location" size={13} color="#900" />
               {item.location}
             </Text>
             <Text style={styles.dimenSionText}>
@@ -92,8 +99,7 @@ const FlatlistComponent = ({index, item, router}) => {
             </Text>
           )}
           <Text style={styles.dateContainerText}>
-            <Icon name="date" size={12} color="#900" />{" "}
-            {formatDate()}
+            <Icon name="date" size={12} color="#900" /> {formatDate()}
           </Text>
         </View>
       </View>

@@ -57,7 +57,6 @@ const DrawerHeader = () => {
                 color: '#000',
               }}
               onPress={(data, details = null) => {
-                console.log(details.description);
                 setLocation(details.description);
               }}
               listEmptyComponent={() => (

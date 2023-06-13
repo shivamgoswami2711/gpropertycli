@@ -1,40 +1,51 @@
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
-import React,{memo} from 'react';
+import React, {memo} from 'react';
 import MapView, {Marker} from 'react-native-maps';
 const WIDTH = Dimensions.get('window').width;
-import { StackActions } from '@react-navigation/native';
-
+import {StackActions} from '@react-navigation/native';
+// import { findInitialRegion } from '../Include/SellData';
 
 const MapHeader = ({title, coordinates = [], navigation}) => {
+  
+  // const [initialRegion, setInitialRegion] = useState(null);
+
+
+  // useEffect(() => {
+  //   setInitialRegion(findInitialRegion(coordinates))
+  // }, [coordinates])
+  // console.log(initialRegion)
+  
   return (
     <View>
       <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          zoomControlEnabled={true}
-          zoomTapEnabled={true}
-          cacheEnabled={true}
-          loadingEnabled={true}
-          region={{
-            latitude: 22.809754, // Replace with the latitude of the point
-            longitude: 78.321457, // Replace with the desired longitude
-            latitudeDelta: 10.7922,
-            longitudeDelta: 10.421,
-          }}>
-          {coordinates.map((item, index) => (
-            <Marker
-              key={index}
-              onPress={() => {
-                const pushAction = StackActions.replace(`Post`, {id: item.id});
-                navigation.dispatch(pushAction);
-              }}
-              coordinate={{
-                latitude: parseFloat(item.lat),
-                longitude: parseFloat(item.long),
-              }}
-            />
-          ))}
-        </MapView>
+        {coordinates.length !== 0 && (
+          <MapView
+            style={styles.map}
+            zoomControlEnabled={true}
+            loadingEnabled={true}
+            region={{
+              latitude: 22.809754,
+              longitude: 78.321457,
+              latitudeDelta: 10.7922,
+              longitudeDelta: 10.421,
+            }}>
+            {coordinates.map((item, index) => (
+              <Marker
+                key={index}
+                onPress={() => {
+                  const pushAction = StackActions.replace(`Post`, {
+                    id: item.id,
+                  });
+                  navigation.dispatch(pushAction);
+                }}
+                coordinate={{
+                  latitude: parseFloat(item.lat),
+                  longitude: parseFloat(item.long),
+                }}
+              />
+            ))}
+          </MapView>
+        )}
       </View>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>{title}</Text>

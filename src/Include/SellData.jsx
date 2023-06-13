@@ -180,6 +180,25 @@ export const RoomType = [
   },
 ];
 
+export const PropertyStatus = [
+  {
+    label: 'Change Status',
+    value: '',
+  },
+  {
+    label: 'Sold',
+    value: 'Sold',
+  },
+  {
+    label: 'Rent',
+    value: 'Rent',
+  },
+  {
+    label: 'Sold',
+    value: 'Sold',
+  },
+];
+
 export const imageType = [
   {
     label: 'tag image',
@@ -234,3 +253,37 @@ export const imageType = [
     value: 'other',
   },
 ];
+
+
+export function findInitialRegion(coordinates=[]) {
+  // Initialize the minimum and maximum latitude and longitude
+  let minLat = Infinity;
+  let maxLat = -Infinity;
+  let minlong = Infinity;
+  let maxlong = -Infinity;
+
+  // Iterate through each coordinate and update the minimum and maximum values
+  for (let i = 0; i < coordinates.length; i++) {
+    const { lat, long } = coordinates[i];
+    minLat = Math.min(minLat, lat);
+    maxLat = Math.max(maxLat, lat);
+    minlong = Math.min(minlong, long);
+    maxlong = Math.max(maxlong, long);
+  }
+
+  // Calculate the center latitude and longitude
+  const centerLat = (minLat + maxLat) / 2;
+  const centerlong = (minlong + maxlong) / 2;
+
+  // Calculate the latitude and longitude delta (difference)
+  const latDelta = maxLat - minLat;
+  const longDelta = maxlong - minlong;
+
+  // Return the initial region object
+  return {
+    latitude: minLat,
+    longitude: minlong,
+    latitudeDelta:  1,
+    longitudeDelta:  1,
+  };
+}

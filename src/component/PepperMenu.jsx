@@ -4,15 +4,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const PepperMenu = ({logoutModal, setLogoutModal,navigation}) => {
+const PepperMenu = ({logoutModal, setLogoutModal, navigation}) => {
   const {profile} = useSelector(state => state.user);
   const dispatch = useDispatch();
 
   async function onLogoutPress() {
-    console.log("hello")
-    await AsyncStorage.removeItem("uid")
-    await AsyncStorage.removeItem("profile")
-    navigation.dispatch(navigation.push('Login'));
+    await AsyncStorage.removeItem('uid');
+    await AsyncStorage.removeItem('profile');
+    navigation.dispatch(navigation.replace('Login'));
     setLogoutModal(false);
   }
 
@@ -33,7 +32,7 @@ const PepperMenu = ({logoutModal, setLogoutModal,navigation}) => {
               size={25}
               color="#000"
             />
-            <Text>Logout</Text>
+            <Text style={{color: '#000'}}>Logout</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => deleteAccount()}
@@ -44,7 +43,19 @@ const PepperMenu = ({logoutModal, setLogoutModal,navigation}) => {
               size={25}
               color="#000"
             />
-            <Text>Account</Text>
+            <Text style={{color: '#000'}}>Account</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.dispatch(navigation.push('PropertyView'))}
+            style={styles.Logoutmenu}>
+            <AntDesign
+              name="eyeo"
+              style={{padding: 10}}
+              size={25}
+              color="#000"
+            />
+            <Text style={{color: '#000'}}>{`Recently \nview`}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -56,11 +67,11 @@ export default PepperMenu;
 
 const styles = StyleSheet.create({
   LogoutCantainer: {
-    position:"absolute",
-    top:50,
-    right:30,
+    position: 'absolute',
+    top: 50,
+    right: 30,
     width: 150,
-    height: 150,
+    height: 170,
     columnGap: 10,
     padding: 20,
     borderRadius: 10,

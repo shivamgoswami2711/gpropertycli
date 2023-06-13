@@ -7,10 +7,10 @@ import {
   ActivityIndicator,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import profile from '../../assets/profile.jpg';
-import logo from '../../assets/logo.png';
 import Filter from '../../component/Filter';
 import MapHeader from '../component/MapHeader';
 import {propertiespage} from '../../redux/actions/properties';
@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/Fontisto';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MapView, {Marker} from 'react-native-maps';
 import {StackActions} from '@react-navigation/native';
+import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 
 function formatNumber(num = 0) {
   if (num) {
@@ -102,7 +103,16 @@ const PropertyListComponet = memo(({item, navigation}) => {
           </View>
         </View>
         <View style={styles.imgandDateContainer}>
-          <Image style={styles.profilePic} source={profile} />
+          <Image
+            style={styles.profilePic}
+            source={
+              item.profile_image
+                ? {
+                    uri: `https://gpropertypay.com/public/uploads/${item.profile_image}`,
+                  }
+                : profile
+            }
+          />
           <Text style={styles.dateContainerText}>
             <Icon name="date" size={12} color="#900" /> {formatDate()}
           </Text>
@@ -119,13 +129,29 @@ const Property = ({route, navigation}) => {
   const [filter, setFilter] = useState({});
   const propertyData = useSelector(state => state.property);
   const [searchAddress, setSearchAddress] = useState(address);
+  const [searchAddressSend, setSearchAddressSend] = useState('');
   const [currentPage, setCurrentPage] = useState(
     propertyData?.current_page || 1,
   );
 
   useEffect(() => {
+    setSearchAddress(
+      searchAddressSend ? searchAddressSend : address ? address : '',
+    );
+  }, [address]);
+
+  useEffect(() => {
+    setSearchAddress(
+      searchAddressSend ? searchAddressSend : address ? address : '',
+    );
+    setSearchAddressSend(
+      searchAddressSend ? searchAddressSend : address ? address : '',
+    );
+  }, [searchAddressSend]);
+
+  useEffect(() => {
     dispatch(propertiespage(1, filter, property_for));
-  }, [dispatch, filter, property_for]);
+  }, [dispatch, filter, property_for, searchAddressSend]);
 
   const loadMoreData = () => {
     if (propertyData?.last_page > currentPage) {
@@ -144,16 +170,70 @@ const Property = ({route, navigation}) => {
     );
   };
 
+  const filterCom = useCallback(
+    (propertyData, property_for, setFilter, searchAddressSend) => {
+      return (
+        <Filter
+          max_price={propertyData?.max_price}
+          min_price={propertyData?.min_price}
+          property_type={propertyData?.property_type}
+          title={property_for}
+          location={searchAddressSend}
+          callback={setFilter}
+        />
+      );
+    },
+    [searchAddressSend],
+  );
+
   return (
     <View>
-      <Filter
-        max_price={propertyData?.max_price}
-        min_price={propertyData?.min_price}
-        property_type={propertyData?.property_type}
-        title={property_for}
-        callback={setFilter}
-      />
-
+      <View>
+        <ScrollView
+          style={{marginHorizontal: 20, marginTop: 10, flexGrow: 1}}
+          horizontal={true}
+          keyboardShouldPersistTaps={'always'}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            width: '100%',
+          }}
+          nestedScrollEnabled={true}>
+          <GooglePlacesAutocomplete
+            placeholder="Search"
+            ref={ref => {
+              ref?.setAddressText(searchAddress);
+            }}
+            listViewDisplayed={false}
+            keepResultsAfterBlur={true}
+            fetchDetails={true}
+            textInputProps={{
+              onChangeText: text => {
+                setSearchAddress(text);
+              },
+              placeholderTextColor: '#000',
+              color: '#000',
+            }}
+            onPress={(data, details = null) => {
+              setSearchAddressSend(details.name);
+            }}
+            renderRow={rowData => {
+              const title = rowData.structured_formatting.main_text;
+              const address = rowData.structured_formatting.secondary_text;
+              return (
+                <View>
+                  <Text style={{fontSize: 14, color: '#000'}}>{title}</Text>
+                  <Text style={{fontSize: 14, color: '#000'}}>{address}</Text>
+                </View>
+              );
+            }}
+            query={{
+              key: 'AIzaSyDxEmw9qvtFiT7LK8GbfLqyPgv3xN7YFZs',
+              language: 'en', // Change language if desired
+            }}
+          />
+        </ScrollView>
+      </View>
+      {filterCom(propertyData, property_for, setFilter, searchAddressSend)}
       <FlatList
         data={propertyData?.property || []}
         renderItem={({Property, item}) => (
@@ -178,6 +258,24 @@ const Property = ({route, navigation}) => {
         onEndReached={loadMoreData}
         ListFooterComponent={renderFooter}
       />
+      {!propertyData.loading && propertyData?.property.length == 0 && (
+        <View
+          style={{height: 500, justifyContent: 'center', alignItems: 'center'}}>
+          <Image
+            style={{width: 150, height: 150, resizeMode: 'contain'}}
+            source={require('../../assets/search404.png')}
+          />
+          <Text
+            style={{
+              color: '#ccc',
+              fontWeight: 800,
+              fontSize: 30,
+              marginTop: 20,
+            }}>
+            Sorry result not found
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

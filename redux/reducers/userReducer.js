@@ -2,6 +2,7 @@ import {createReducer} from '@reduxjs/toolkit';
 
 const initialState = {
   profile: {},
+  recentlyViewData: [],
   loading: false,
   error: null,
 };
@@ -27,6 +28,18 @@ export const userReducer = createReducer(initialState, builder => {
       state.profile = action.payload;
     })
     .addCase('UpdateUserFail', (state, action) => {
+      console.log(action.payload);
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase('recentlyviewRequest', state => {
+      state.loading = true;
+    })
+    .addCase('recentlyviewSuccess', (state, action) => {
+      state.loading = false;
+      state.recentlyViewData = [...recentlyViewData, action.payload];
+    })
+    .addCase('recentlyviewFail', (state, action) => {
       console.log(action.payload);
       state.loading = false;
       state.error = action.payload;

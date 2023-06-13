@@ -16,14 +16,17 @@ import property from '../../assets/logo.png';
 import {launchImageLibrary} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Octicons from 'react-native-vector-icons/Octicons';
 import {userUpdate} from '../../redux/actions/user';
 import {useDispatch, useSelector} from 'react-redux';
+import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   deleteProperty,
   oneForUpdateproperty,
   userproperty,
 } from '../../redux/actions/properties';
+import {PropertyStatus} from '../Include/SellData';
 const WIDTH = Dimensions.get('window').width;
 
 const Profile = ({navigation}) => {
@@ -36,7 +39,7 @@ const Profile = ({navigation}) => {
     if (!userId) {
       if (userId == undefined) {
         Alert.alert('please check your internet connection');
-        navigation.navigate('Home')
+        navigation.navigate('Home');
       } else {
         navigation.dispatch(navigation.push('Login'));
       }
@@ -45,12 +48,13 @@ const Profile = ({navigation}) => {
 
   useEffect(() => {
     dispatch(userproperty({id: userId, uid: profile.uid}));
-  }, [dispatch,navigation]);
+  }, [dispatch, navigation]);
 
   const [profileModule, setProfileModule] = useState(false);
   const [name, setName] = useState(profile ? profile.first_name : '');
   const [lName, setLName] = useState(profile ? profile.last_name : '');
   const [email, setEmail] = useState(profile ? profile.email : '');
+  const [propertyStatus, setPropertyStatus] = useState('Padding');
 
   const [image, setImage] = useState('');
 
@@ -166,6 +170,12 @@ const Profile = ({navigation}) => {
         renderItem={({item, index}) => (
           <TouchableOpacity
             key={index}
+            style={{
+              height: 220,
+              margin: 20,
+              borderRadius: 20,
+              backgroundColor: '#fff',
+            }}
             onPress={() =>
               navigation.dispatch(navigation.push(`Post`, {id: item.id}))
             }>
@@ -195,7 +205,7 @@ const Profile = ({navigation}) => {
                 style={{
                   justifyContent: 'space-between',
                   marginVertical: 5,
-                  height: 130,
+                  height: 120,
                 }}>
                 <TouchableOpacity onPress={() => showAlertforProperty(item.id)}>
                   <Entypo name="cross" size={30} color="#000" />
@@ -213,12 +223,48 @@ const Profile = ({navigation}) => {
                 </TouchableOpacity>
               </View>
             </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                marginTop: 10,
+                alignItems: 'center',
+                marginBottom: 10,
+              }}>
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Octicons
+                  name="dot-fill"
+                  size={40}
+                  color={
+                    item.admin_status == 'Approved'
+                      ? '#03fc3d'
+                      : item.admin_status == 'Pending'
+                      ? '#f5c542'
+                      : '#fc1c03'
+                  }
+                />
+                <Text style={{color: '#000'}}>{item.admin_status}</Text>
+              </View>
+              <View style={styles.bedroomcontainer}>
+                <Picker
+                  style={styles.bedroompicker}
+                  selectedValue={propertyStatus}
+                  onValueChange={item => setPropertyStatus(item)}>
+                  {PropertyStatus.map(({label, value}) => (
+                    <Picker.Item key={label} label={label} value={value} />
+                  ))}
+                </Picker>
+              </View>
+            </View>
           </TouchableOpacity>
         )}
       />
 
       <Modal visible={profileModule} transparent={true} animationType="slide">
-        <TouchableOpacity TouchableOpacity={0} style={styles.modalCantainer} onPress={()=>setProfileModule(false)}>
+        <TouchableOpacity
+          TouchableOpacity={0}
+          style={styles.modalCantainer}
+          onPress={() => setProfileModule(false)}>
           <View style={styles.modalBottomCantainer}>
             <View>
               <View style={styles.profileImgCantainer}>
@@ -494,10 +540,6 @@ const styles = StyleSheet.create({
   propertyCantainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 150,
-    margin: 20,
-    borderRadius: 20,
-    backgroundColor: '#fff',
     columnGap: 20,
     paddingHorizontal: 20,
   },
@@ -517,5 +559,17 @@ const styles = StyleSheet.create({
     height: 80,
     textTransform: 'capitalize',
     marginTop: 10,
+  },
+  bedroomcontainer: {
+    justifyContent: 'center',
+    width: 190,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginLeft: 20,
+    color: '#000',
+  },
+  bedroompicker: {
+    color: '#000',
   },
 });

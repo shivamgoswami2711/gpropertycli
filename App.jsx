@@ -18,6 +18,7 @@ import Post from './src/screens/Post';
 import Property from './src/screens/Property';
 import Splash from './src/screens/Splash';
 import EdtProperty from './src/screens/EdtProperty';
+import PropertyView from './src/screens/PropertyView';
 
 function App() {
   const Stack = createNativeStackNavigator();
@@ -56,6 +57,11 @@ function App() {
                 name="EdtProperty"
                 options={{headerShown: false}}
                 component={EdtProperty}
+              />
+              <Stack.Screen
+                name="PropertyView"
+                options={{headerShown: false}}
+                component={PropertyView}
               />
             </Stack.Navigator>
           </NavigationContainer>

@@ -1,14 +1,15 @@
 import axios from 'axios';
 
 export const propertiespage =
-  (id, param, type = 'buy') =>
+  (id, param, type = 'buy', location) =>
   async dispatch => {
     const params = {
       price_min: param.min || 0,
       price_max: param.max || 0,
       property_type: param?.property_type || '',
+      property_for: param?.propertyFor || '',
+      location: param?.location,
     };
-
     try {
       dispatch({type: 'propertiesPageRequest'});
       const {data} = await axios.get(`/${type}?page=${id}`, {params});
@@ -22,7 +23,6 @@ export const propertiespage =
   };
 
 export const addNewpropertie = formdata => async dispatch => {
-  console.log('hello');
   try {
     dispatch({type: 'AddNewRequest'});
     const {data} = await axios.post(`/addProperty`, formdata, {
