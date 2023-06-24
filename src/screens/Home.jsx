@@ -16,7 +16,6 @@ import housereant from '../../assets/housereant.png';
 import housesale from '../../assets/housesale.png';
 import FlatlistComponent from '../component/FlatlistSmailCard';
 import {propertyHome} from '../../redux/actions/home';
-import Icon from 'react-native-vector-icons/AntDesign';
 
 const Home = ({navigation}) => {
   const home = useSelector(state => state.home);
@@ -25,7 +24,7 @@ const Home = ({navigation}) => {
 
   useEffect(() => {
     const type = ['sell', 'rent'];
-     type.forEach(type => dispatch(propertyHome(type)));
+    type.forEach(type => dispatch(propertyHome(type)));
   }, [dispatch]);
 
   const renderFooter = useCallback(() => {
@@ -57,6 +56,7 @@ const Home = ({navigation}) => {
           <View style={styles.cardContainer}>
             <View style={styles.card}>
               <TouchableOpacity
+                activeOpacity={0.5}
                 onPress={() =>
                   navigation.navigate('Property', {property_for: 'buy'})
                 }>
@@ -66,6 +66,7 @@ const Home = ({navigation}) => {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
+                activeOpacity={0.5}
                 onPress={() =>
                   navigation.navigate('Property', {property_for: 'rent'})
                 }>
@@ -74,7 +75,9 @@ const Home = ({navigation}) => {
                   <Text style={styles.menuTitle}>{`Rent \nproperty`}</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('Sell')}>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => navigation.navigate('Sell')}>
                 <View style={styles.menuContainer}>
                   <Image source={housesale} style={styles.menuIcon} />
                   <Text style={styles.menuTitle}>{`Sell \nproperty`}</Text>

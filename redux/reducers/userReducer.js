@@ -28,7 +28,6 @@ export const userReducer = createReducer(initialState, builder => {
       state.profile = action.payload;
     })
     .addCase('UpdateUserFail', (state, action) => {
-      console.log(action.payload);
       state.loading = false;
       state.error = action.payload;
     })
@@ -37,10 +36,13 @@ export const userReducer = createReducer(initialState, builder => {
     })
     .addCase('recentlyviewSuccess', (state, action) => {
       state.loading = false;
-      state.recentlyViewData = [...recentlyViewData, action.payload];
+      if (action.payload.current_page == 1) {
+        state.recentlyViewData = action.payload.data;
+      } else {
+        state.recentlyViewData = [...state.recentlyViewData, action.payload.data];
+      }
     })
     .addCase('recentlyviewFail', (state, action) => {
-      console.log(action.payload);
       state.loading = false;
       state.error = action.payload;
     });

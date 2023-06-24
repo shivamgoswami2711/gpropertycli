@@ -40,6 +40,26 @@ export const addNewpropertie = formdata => async dispatch => {
   }
 };
 
+export const updateproperty = formdata => async dispatch => {
+  try {
+    dispatch({type: 'updatepropertyRequest'});
+    const {data} = await axios.post(`/updateproperty`, formdata, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+      },
+    });
+    console.log(data)
+    dispatch({type: 'updatepropertySuccess', payload: data});
+  } catch (error) {
+    console.log(error)
+    dispatch({
+      type: 'updatepropertyFail',
+      payload: error.AxiosError,
+    });
+  }
+};
+
 export const userproperty =
   ({uid, id}) =>
   async dispatch => {

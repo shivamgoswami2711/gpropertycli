@@ -37,6 +37,7 @@ const FlatlistComponent = ({index, item, router}) => {
       style={{
         marginVertical: 8,
       }}
+      activeOpacity={0.5}
       onPress={() => router.navigate(`Post`, {id: item.id})}>
       <View key={index} style={styles.FlatlistComponent}>
         <View style={styles.profileContainer}>

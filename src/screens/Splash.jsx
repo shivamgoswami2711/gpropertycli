@@ -8,6 +8,7 @@ const Splash = ({navigation}) => {
     setTimeout(() => {
       navigation.dispatch(StackActions.replace('HomePage'));
     }, 500);
+    return
   }, []);
 
   return (

@@ -177,20 +177,34 @@ const DrawerNavigation = ({navigation}) => {
                 </View>
                 <View>
                   {!onSerachClick ? (
-                    <TouchableOpacity
-                      style={{marginRight: 20}}
-                      onPress={() => setOnSerachClick(!onSerachClick)}>
-                      <AntDesign
-                        name="search1"
-                        style={{padding: 10}}
-                        size={25}
-                        color="black"
-                      />
-                    </TouchableOpacity>
+                    <View style={{flexDirection: 'row'}}>
+                      <TouchableOpacity
+                        // style={{marginRight: 20}}
+                        onPress={() => setOnSerachClick(!onSerachClick)}>
+                        <AntDesign
+                          name="search1"
+                          style={{padding: 10}}
+                          size={25}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{marginRight: 10}}
+                        onPress={() => {
+                          navigation.navigate("PropertyView")
+                        }}>
+                        <AntDesign
+                          name="hearto"
+                          style={{padding: 10}}
+                          size={25}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                    </View>
                   ) : (
                     <View style={styles.cross}>
                       <TouchableOpacity
-                        // style={styles.cross}
+                        style={styles.cross}
                         onPress={() => setOnSerachClick(!onSerachClick)}>
                         <Text style={{color: '#000'}}>cancel</Text>
                       </TouchableOpacity>
@@ -328,7 +342,6 @@ const styles = StyleSheet.create({
   cross: {
     position: 'absolute',
     top: 10,
-    padding: 10,
     right: 10,
     zIndex: 2,
   },

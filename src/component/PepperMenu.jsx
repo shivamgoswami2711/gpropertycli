@@ -55,7 +55,7 @@ const PepperMenu = ({logoutModal, setLogoutModal, navigation}) => {
               size={25}
               color="#000"
             />
-            <Text style={{color: '#000'}}>{`Recently \nview`}</Text>
+            <Text style={{color: '#000'}}>{`save`}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>

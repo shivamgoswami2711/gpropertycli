@@ -23,6 +23,7 @@ import {
   RoomType,
   carpet_areaData,
   facing_road_width_inData,
+  imageType,
 } from '../Include/SellData';
 import CustomRadioButton from '../component/CustomRadioButton';
 import DatePicker from 'react-native-modern-datepicker';
@@ -30,7 +31,7 @@ import {useCallback} from 'react';
 import Video from 'react-native-video';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
-import {addNewpropertie} from '../../redux/actions/properties';
+import {addNewpropertie, updateproperty} from '../../redux/actions/properties';
 
 // phone size width
 const WIDTH = Dimensions.get('window').width;
@@ -64,24 +65,46 @@ const EdtProperty = ({route, navigation}) => {
   const [location, setLocation] = useState(oneproperty.location);
   const [bedrooms, setBedrooms] = useState(oneproperty.bedrooms);
   const [saleable_area, setSaleable_area] = useState(oneproperty.saleable_area);
-  const [saleable_area_size_in, setSaleable_area_size_in] = useState(oneproperty.saleable_area_size_in);
+  const [saleable_area_size_in, setSaleable_area_size_in] = useState(
+    oneproperty.saleable_area_size_in,
+  );
   const [carpet_area, setCarpet_area] = useState(oneproperty.carpet_area);
-  const [carpet_area_size_in, setCarpet_area_size_in] = useState(oneproperty.carpet_area_size_in);
+  const [carpet_area_size_in, setCarpet_area_size_in] = useState(
+    oneproperty.carpet_area_size_in,
+  );
   const [bathrooms, setBathrooms] = useState(oneproperty.bathrooms);
   const [balconies, setBalconies] = useState(oneproperty.balconies);
-  const [additional_facility, setAdditional_facility] = useState(oneproperty.additional_facility);
-  const [expected_price, setExpected_price] = useState(oneproperty.expected_price);
-  const [expected_price_in_sqft, setExpected_price_in_sqft] = useState(oneproperty.expected_price_in_sqft);
+  const [additional_facility, setAdditional_facility] = useState(
+    oneproperty.additional_facility,
+  );
+  const [expected_price, setExpected_price] = useState(
+    oneproperty.expected_price,
+  );
+  const [expected_price_in_sqft, setExpected_price_in_sqft] = useState(
+    oneproperty.expected_price_in_sqft,
+  );
   const [booking_price, setBooking_price] = useState(oneproperty.booking_price);
   const [monthly_rent, setMonthly_rent] = useState(oneproperty.monthly_rent);
-  const [security_deposit, setSecurity_deposit] = useState(oneproperty.security_deposit);
-  const [maintance_charge, setMaintance_charge] = useState(oneproperty.maintance_charge);
-  const [available_from, setAvailable_from] = useState(oneproperty.available_from);
-  const [property_status, setProperty_status] = useState(oneproperty.property_status);
+  const [security_deposit, setSecurity_deposit] = useState(
+    oneproperty.security_deposit,
+  );
+  const [maintance_charge, setMaintance_charge] = useState(
+    oneproperty.maintance_charge,
+  );
+  const [available_from, setAvailable_from] = useState(
+    oneproperty.available_from,
+  );
+  const [property_status, setProperty_status] = useState(
+    oneproperty.property_status,
+  );
   const [property_age, setProperty_age] = useState(oneproperty.property_age);
-  const [possession_date, setPossession_date] = useState(oneproperty.possession_date);
+  const [possession_date, setPossession_date] = useState(
+    oneproperty.possession_date,
+  );
   const [description, setDescription] = useState(oneproperty.description);
-  const [furnishing_status, setFurnishing_status] = useState(oneproperty.furnishing_status);
+  const [furnishing_status, setFurnishing_status] = useState(
+    oneproperty.furnishing_status,
+  );
   const [negotiable, setNegotiable] = useState('no');
   const [wardrobe, setWardrobe] = useState(oneproperty.wardrobe);
   const [beds, setBeds] = useState(oneproperty.beds);
@@ -90,41 +113,71 @@ const EdtProperty = ({route, navigation}) => {
   const [light, setLight] = useState(oneproperty.light);
   const [fan, setFan] = useState(oneproperty.fan);
   const [exhaust_fan, setExhaust_fan] = useState(oneproperty.exhaust_fan);
-  const [additional_room, setAdditional_room] = useState(oneproperty.additional_room);
-  const [additional_furnishing, setAdditional_furnishing] = useState(oneproperty.additional_furnishing);
+  const [additional_room, setAdditional_room] = useState(
+    oneproperty.additional_room,
+  );
+  const [additional_furnishing, setAdditional_furnishing] = useState(
+    oneproperty.additional_furnishing,
+  );
   const [floor, setFloor] = useState(oneproperty.floor);
   const [total_floor, setTotal_floor] = useState(oneproperty.total_floor);
   const [open_side, setOpen_side] = useState(oneproperty.open_side);
   const [facing_side, setFacing_side] = useState(oneproperty.facing_side);
-  const [facing_road_width, setFacing_road_width] = useState(oneproperty.facing_road_width);
-  const [facing_road_width_in, setFacing_road_width_in] = useState(oneproperty.facing_road_width_in);
+  const [facing_road_width, setFacing_road_width] = useState(
+    oneproperty.facing_road_width,
+  );
+  const [facing_road_width_in, setFacing_road_width_in] = useState(
+    oneproperty.facing_road_width_in,
+  );
   const [overlooking, setOverlooking] = useState(oneproperty.overlooking);
   const [ownershiptype, setOwnershiptype] = useState(oneproperty.ownershiptype);
   const [living_room, setLiving_room] = useState(oneproperty.living_room);
   const [kitchen, setKitchen] = useState(oneproperty.kitchen);
-  const [master_bedroom, setMaster_bedroom] = useState(oneproperty.master_bedroom);
+  const [master_bedroom, setMaster_bedroom] = useState(
+    oneproperty.master_bedroom,
+  );
   const [bathroom, setBathroom] = useState(oneproperty.bathroom);
   const [balcony, setBalcony] = useState(oneproperty.balcony);
   const [other_bedroom, setOther_bedroom] = useState(oneproperty.other_bedroom);
-  const [preferred_tenants, setPreferred_tenants] = useState(oneproperty.preferred_tenants);
-  const [gender_preference, setGender_preference] = useState(oneproperty.gender_preference);
-  const [maximum_tentants_allowed, setMaximum_tentants_allowed] = useState(oneproperty.maximum_tentants_allowed);
-  const [work_preference, setWork_preference] = useState(oneproperty.work_preference);
-  const [food_preference, setFood_preference] = useState(oneproperty.food_preference);
-  const [expected_duration_of_stay, setExpected_duration_of_stay] = useState(oneproperty.expected_duration_of_stay);
-  const [special_requirement, setSpecial_requirement] = useState(oneproperty.special_requirement);
+  const [preferred_tenants, setPreferred_tenants] = useState(
+    oneproperty.preferred_tenants,
+  );
+  const [gender_preference, setGender_preference] = useState(
+    oneproperty.gender_preference,
+  );
+  const [maximum_tentants_allowed, setMaximum_tentants_allowed] = useState(
+    oneproperty.maximum_tentants_allowed,
+  );
+  const [work_preference, setWork_preference] = useState(
+    oneproperty.work_preference,
+  );
+  const [food_preference, setFood_preference] = useState(
+    oneproperty.food_preference,
+  );
+  const [expected_duration_of_stay, setExpected_duration_of_stay] = useState(
+    oneproperty.expected_duration_of_stay,
+  );
+  const [special_requirement, setSpecial_requirement] = useState(
+    oneproperty.special_requirement,
+  );
   const [images, setImages] = useState(
     oneproperty.images ? JSON.parse(oneproperty.images) : [],
   );
+  const [newImages, setNewImages] = useState([]);
   const [room_data, setRoom_data] = useState(
     oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],
   );
   const [video, setVideo] = useState(oneproperty.video);
+  const [newVideo, setNewVideo] = useState('');
   const [views, setViews] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showAvailableDatePicker, setShowAvailableDatePicker] = useState(false);
-  const [car_parking_close, setCar_parking_close] = useState(oneproperty.car_parking_close);
-  const [car_parking_open, setCar_parking_open] = useState(oneproperty.car_parking_open);
+  const [car_parking_close, setCar_parking_close] = useState(
+    oneproperty.car_parking_close,
+  );
+  const [car_parking_open, setCar_parking_open] = useState(
+    oneproperty.car_parking_open,
+  );
 
   // disild page number
   const [pageNumber, setPageNumber] = useState(1);
@@ -135,84 +188,99 @@ const EdtProperty = ({route, navigation}) => {
   const [addRoomDataActive, setAddRoomDataActive] = useState(false);
   const [make_display_image, setMake_display_image] = useState('');
 
+  const [image_type, setImage_type] = useState([]);
+  const [new_image_type, setNew_image_type] = useState([]);
   // scrollView refrence
   const scrollRef = useRef();
 
+  const addImageType = (index, data) => {
+    let copyArray = [...image_type];
+    copyArray[index] = data;
+    setImage_type(copyArray);
+  };
+  const addImageNewType = (index, data) => {
+    let copyArray = [...new_image_type];
+    copyArray[index] = data;
+    setNew_image_type(copyArray);
+  };
 
-
-
-
-
-useEffect(() => {
-
-  setProperty_for(oneproperty.property_for)
-setLat(oneproperty.lat)
-setLong(oneproperty.long)
-setProperty_type(oneproperty.property_type)
-setAdded_by_type(oneproperty.added_by_type)
-setLocation(oneproperty.location)
-setBedrooms(oneproperty.bedrooms)
-setSaleable_area(oneproperty.saleable_area)
-setSaleable_area_size_in(oneproperty.saleable_area_size_in)
-setCarpet_area(oneproperty.carpet_area)
-setCarpet_area_size_in(oneproperty.carpet_area_size_in)
-setBathrooms(oneproperty.bathrooms)
-setBalconies(oneproperty.balconies)
-setAdditional_facility(oneproperty.additional_facility)
-setExpected_price(oneproperty.expected_price)
-setExpected_price_in_sqft(oneproperty.expected_price_in_sqft)
-setBooking_price(oneproperty.booking_price)
-setMonthly_rent(oneproperty.monthly_rent)
-setSecurity_deposit(oneproperty.security_deposit)
-setMaintance_charge(oneproperty.maintance_charge)
-setAvailable_from(oneproperty.available_from)
-setProperty_status(oneproperty.property_status)
-setProperty_age(oneproperty.property_age)
-setPossession_date(oneproperty.possession_date)
-setDescription(oneproperty.description)
-setFurnishing_status(oneproperty.furnishing_status)
-setWardrobe(oneproperty.wardrobe)
-setBeds(oneproperty.beds)
-setAc(oneproperty.ac)
-setTv(oneproperty.tv)
-setLight(oneproperty.light)
-setFan(oneproperty.fan)
-setExhaust_fan(oneproperty.exhaust_fan)
-setAdditional_room(oneproperty.additional_room)
-setAdditional_furnishing(oneproperty.additional_furnishing)
-setFloor(oneproperty.floor)
-setTotal_floor(oneproperty.total_floor)
-setOpen_side(oneproperty.open_side)
-setFacing_side(oneproperty.facing_side)
-setFacing_road_width(oneproperty.facing_road_width)
-setFacing_road_width_in(oneproperty.facing_road_width_in)
-setOverlooking(oneproperty.overlooking)
-setOwnershiptype(oneproperty.ownershiptype)
-setLiving_room(oneproperty.living_room)
-setKitchen(oneproperty.kitchen)
-setMaster_bedroom(oneproperty.master_bedroom)
-setBathroom(oneproperty.bathroom)
-setBalcony(oneproperty.balcony)
-setOther_bedroom(oneproperty.other_bedroom)
-setPreferred_tenants(oneproperty.preferred_tenants)
-setGender_preference(oneproperty.gender_preference)
-setMaximum_tentants_allowed(oneproperty.maximum_tentants_allowed)
-setWork_preference(oneproperty.work_preference)
-setFood_preference(oneproperty.food_preference)
-setExpected_duration_of_stay(oneproperty.expected_duration_of_stay)
-setSpecial_requirement(oneproperty.special_requirement)
-setVideo(oneproperty.video)
-setCar_parking_close(oneproperty.car_parking_close)
-setCar_parking_open(oneproperty.car_parking_open)
-setRoomPrice(oneproperty.roomPrice)
-setImages( oneproperty.images ? JSON.parse(oneproperty.images) : [],)
-setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
-}, [oneproperty])
-
-
-
-
-
+  useEffect(() => {
+    setProperty_for(oneproperty.property_for || '');
+    setLat(oneproperty.lat || 0);
+    setLong(oneproperty.long || 0);
+    setProperty_type(oneproperty.property_type || '');
+    setAdded_by_type(oneproperty.added_by_type || '');
+    setLocation(oneproperty.location || '');
+    setBedrooms(oneproperty.bedrooms || '');
+    setSaleable_area(oneproperty.saleable_area || '');
+    setSaleable_area_size_in(oneproperty.saleable_area_size_in || 'Meters');
+    setCarpet_area(oneproperty.carpet_area);
+    setCarpet_area_size_in(oneproperty.carpet_area_size_in || 'Meters');
+    setBathrooms(oneproperty.bathrooms || '');
+    setBalconies(oneproperty.balconies || '');
+    setAdditional_facility(oneproperty.additional_facility || []);
+    setExpected_price(oneproperty.expected_price || '');
+    setExpected_price_in_sqft(oneproperty.expected_price_in_sqft || '');
+    setBooking_price(oneproperty.booking_price || '');
+    setMonthly_rent(oneproperty.monthly_rent || '');
+    setSecurity_deposit(oneproperty.security_deposit || '');
+    setMaintance_charge(oneproperty.maintance_charge || '');
+    setAvailable_from(
+      oneproperty.available_from || new Date().toLocaleDateString(),
+    );
+    setProperty_status(oneproperty.property_status || '');
+    setProperty_age(
+      oneproperty.property_age || new Date().toLocaleDateString(),
+    );
+    setPossession_date(
+      oneproperty.possession_date || new Date().toLocaleDateString(),
+    );
+    setDescription(oneproperty.description || '');
+    setFurnishing_status(oneproperty.furnishing_status || '');
+    setWardrobe(oneproperty.wardrobe || '');
+    setBeds(oneproperty.beds || '');
+    setAc(oneproperty.ac || '');
+    setTv(oneproperty.tv || '');
+    setLight(oneproperty.light || '');
+    setFan(oneproperty.fan || '');
+    setExhaust_fan(oneproperty.exhaust_fan || '');
+    setAdditional_room(oneproperty.additional_room || []);
+    setAdditional_furnishing(oneproperty.additional_furnishing || []);
+    setFloor(oneproperty.floor || '');
+    setTotal_floor(oneproperty.total_floor || '');
+    setOpen_side(oneproperty.open_side || '');
+    setFacing_side(oneproperty.facing_side || '');
+    setFacing_road_width(oneproperty.facing_road_width || '');
+    setFacing_road_width_in(oneproperty.facing_road_width_in || 'Meters');
+    setOverlooking(oneproperty.overlooking || []);
+    setOwnershiptype(oneproperty.ownershiptype || '');
+    setLiving_room(oneproperty.living_room || '');
+    setKitchen(oneproperty.kitchen || '');
+    setMaster_bedroom(oneproperty.master_bedroom || '');
+    setBathroom(oneproperty.bathroom || '');
+    setBalcony(oneproperty.balcony || '');
+    setOther_bedroom(oneproperty.other_bedroom || '');
+    setPreferred_tenants(oneproperty.preferred_tenants || '');
+    setGender_preference(oneproperty.gender_preference || '');
+    setMaximum_tentants_allowed(oneproperty.maximum_tentants_allowed || '');
+    setWork_preference(oneproperty.work_preference || '');
+    setFood_preference(oneproperty.food_preference || '');
+    setExpected_duration_of_stay(oneproperty.expected_duration_of_stay || '');
+    setSpecial_requirement(oneproperty.special_requirement || '');
+    setVideo(oneproperty.video);
+    setCar_parking_close(oneproperty.car_parking_close || '');
+    setCar_parking_open(oneproperty.car_parking_open || '');
+    setRoomPrice(oneproperty.roomPrice || '');
+    setImages(oneproperty.images ? JSON.parse(oneproperty.images) : []);
+    setRoom_data(
+      oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],
+    );
+    setMake_display_image(oneproperty.image);
+    images &&
+      images.map(item => {
+        setImage_type(prevState => [...prevState, item.image_type]);
+      });
+  }, [oneproperty]);
 
   // adding data in roomDetail variable
   const AddRoomDetails = () => {
@@ -243,7 +311,7 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
           includeBase64: false,
         },
         ({assets}) => {
-          assets ? setImages(assets) : '';
+          assets ? setNewImages(assets) : '';
         },
       );
     } catch {
@@ -260,7 +328,7 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
           mediaType: 'video',
           includeBase64: false,
         },
-        setVideo,
+        setNewVideo,
       );
     } catch {
       error => {
@@ -362,6 +430,8 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
     const formdata = new FormData();
 
     // append data in form variable
+    formdata.append('added_by', userId);
+    formdata.append('id', oneproperty.id);
     formdata.append('property_for', property_for);
     formdata.append('latitude', lat);
     formdata.append('longitude', long);
@@ -385,12 +455,15 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
     formdata.append('monthly_rent', monthly_rent);
     formdata.append('security_deposit', security_deposit);
     formdata.append('maintance_charge', maintance_charge);
-    formdata.append('available_from', available_from);
+    formdata.append(
+      'available_from',
+      available_from != new Date().toLocaleDateString() ? available_from : '',
+    );
     formdata.append('property_status', property_status);
     formdata.append('property_age', property_age);
     formdata.append(
       'possession_date',
-      possession_date != new Date().toDateString() ? possession_date : '',
+      possession_date != new Date().toLocaleDateString() ? possession_date : '',
     );
     formdata.append('description', description);
     formdata.append('furnishing_status', furnishing_status);
@@ -402,7 +475,10 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
     formdata.append('light', light);
     formdata.append('fan', fan);
     formdata.append('exhaust_fan', exhaust_fan);
-    formdata.append('additional_room', additional_room);
+    formdata.append(
+      'additional_room',
+      additional_room ? additional_room.toString() : '',
+    );
     formdata.append(
       'additional_furnishing',
       additional_furnishing ? additional_furnishing.toString() : '',
@@ -442,43 +518,72 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
       formdata.append('room_data[price][]', '');
     }
 
-    formdata.append('views', views);
-    formdata.append('showAvailableDatePicker', showAvailableDatePicker);
-
     formdata.append('car_parking_close', car_parking_close);
 
     formdata.append('car_parking_open', car_parking_open);
 
-    images.map((_, index) => {
+    images &&
+      images.map(item => {
+        formdata.append('old_image[]', item.images);
+      });
+
+    newImages.map((_, index) => {
       formdata.append(
         'image_type[]',
+        new_image_type[index] ? new_image_type[index] : '',
+      );
+    });
+    images.map((_, index) => {
+      formdata.append(
+        'old_image_type[]',
         image_type[index] ? image_type[index] : '',
       );
     });
+
+    formdata.append(
+      'old_make_display_image',
+      make_display_image
+        ? make_display_image
+        : images.length
+        ? images[0]?.images
+        : '',
+    );
     formdata.append(
       'make_display_image',
-      make_display_image ? images[0]?.fileName : '',
+      make_display_image
+        ? make_display_image
+        : images.length
+        ? images[0]?.images
+        : newImages
+        ? newImages[0].fileName
+        : '',
     );
 
-    images &&
-      images.map(item => {
+    newImages &&
+      newImages.map(item => {
         formdata.append('files[]', {
           uri: item.uri,
           type: 'image/jpeg',
           name: item.uri.split('/').pop(),
         });
       });
+    formdata.append('old_video', video);
 
-    video &&
-      formdata.append('video', {
-        uri: video.assets[0].uri,
+    newVideo &&
+      console.log({
+        uri: newVideo.assets[0].uri,
         type: 'video/mp4',
-        name: video.assets && video.assets[0].uri.split('/').pop(),
+        name: newVideo.assets && newVideo.assets[0]?.uri.split('/').pop(),
       });
-    formdata.append('id', userId);
+    newVideo &&
+      formdata.append('video', {
+        uri: newVideo.assets[0].uri,
+        type: 'video/mp4',
+        name: newVideo.assets && newVideo.assets[0]?.uri.split('/').pop(),
+      });
 
-    dispatch(addNewpropertie(formdata));
-    navigation.dispatch(navigation.replace('HomePage'));
+    dispatch(updateproperty(formdata));
+    // navigation.goBack()
   }
 
   if (loading) {
@@ -574,8 +679,8 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
                             placeholderTextColor={'#000'}
                             style={styles.saleableAreaInput}
                             keyboardType="numeric"
-                            value={saleable_area.toString()}
-                            onChangeText={setSaleable_area}
+                            value={saleable_area}
+                            onChangeText={setSaleable_area.toString()}
                             placeholder="e.g., 123"
                           />
                           <View style={styles.Saleablecontainer}>
@@ -604,8 +709,8 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
                               placeholderTextColor={'#000'}
                               style={styles.saleableAreaInput}
                               keyboardType="numeric"
-                              value={carpet_area.toString()}
-                              onChangeText={setCarpet_area}
+                              value={carpet_area}
+                              onChangeText={setCarpet_area.toString()}
                               placeholder="e.g., 123"
                             />
                             <View
@@ -904,7 +1009,7 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
                       <Text style={{color: '#000'}}>
                         {available_from
                           ? available_from
-                          : new Date().toDateString()}
+                          : new Date().toLocaleDateString()}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -991,52 +1096,58 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
                       <View style={styles.RoomDetails}>
                         <Text style={styles.heading}>Room Details</Text>
                         <View>
-                          <View>
-                            <View
-                              style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-around',
-                                marginHorizontal: 10,
-                              }}>
-                              <Text style={{fontWeight: 'bold', color: '#000'}}>
-                                Room Type
-                              </Text>
-                              <Text style={{fontWeight: 'bold', color: '#000'}}>
-                                Number Of Rooms
-                              </Text>
-                              <Text style={{fontWeight: 'bold', color: '#000'}}>
-                                Price
-                              </Text>
-                              <Text style={{fontWeight: 'bold', color: '#000'}}>
-                                Remove
-                              </Text>
-                            </View>
-                            <View style={{marginTop: 20}}>
-                              {room_data.map((item, idx) => (
-                                <View style={styles.room_dataStyle} key={idx}>
-                                  <Text style={{color: '#000'}}>
-                                    {item.room}
-                                  </Text>
-                                  <Text style={{color: '#000'}}>
-                                    {item.numberOfRooms}
-                                  </Text>
-                                  <Text style={{color: '#000'}}>
-                                    {item.price}
-                                  </Text>
-                                  <TouchableOpacity
-                                    onPress={() => RemoveRoomDetails(idx)}>
-                                    <Text
-                                      style={{
-                                        fontWeight: 'bold',
-                                        color: '#000',
-                                      }}>
-                                      Remove
+                          {room_data[0].no_of_rooms !== null && (
+                            <View>
+                              <View
+                                style={{
+                                  flexDirection: 'row',
+                                  justifyContent: 'space-around',
+                                  marginHorizontal: 10,
+                                }}>
+                                <Text
+                                  style={{fontWeight: 'bold', color: '#000'}}>
+                                  Room Type
+                                </Text>
+                                <Text
+                                  style={{fontWeight: 'bold', color: '#000'}}>
+                                  Number Of Rooms
+                                </Text>
+                                <Text
+                                  style={{fontWeight: 'bold', color: '#000'}}>
+                                  Price
+                                </Text>
+                                <Text
+                                  style={{fontWeight: 'bold', color: '#000'}}>
+                                  Remove
+                                </Text>
+                              </View>
+                              <View style={{marginTop: 20}}>
+                                {room_data.map((item, idx) => (
+                                  <View style={styles.room_dataStyle} key={idx}>
+                                    <Text style={{color: '#000'}}>
+                                      {item.room}
                                     </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              ))}
+                                    <Text style={{color: '#000'}}>
+                                      {item.numberOfRooms}
+                                    </Text>
+                                    <Text style={{color: '#000'}}>
+                                      {item.price}
+                                    </Text>
+                                    <TouchableOpacity
+                                      onPress={() => RemoveRoomDetails(idx)}>
+                                      <Text
+                                        style={{
+                                          fontWeight: 'bold',
+                                          color: '#000',
+                                        }}>
+                                        Remove
+                                      </Text>
+                                    </TouchableOpacity>
+                                  </View>
+                                ))}
+                              </View>
                             </View>
-                          </View>
+                          )}
                           <TouchableOpacity
                             onPress={() => setAddRoomDataActive(true)}
                             style={{
@@ -1149,6 +1260,7 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
                       />
                     </View>
                   </View>
+
                   <View
                     style={[styles.Saleablemaincontainer, styles.Carpetarea]}>
                     <View style={[styles.Carpetarea]}>
@@ -1413,15 +1525,15 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
                           }
                         />
                         <CustomRadioButton
-                          label={'Meter Connection'}
+                          label={'Meters Connection'}
                           img={
                             'https://gpropertypay.com/public/assets/meter_connection.png'
                           }
                           selected={additional_furnishing.includes(
-                            'Meter Connection',
+                            'Meters Connection',
                           )}
                           onSelect={() =>
-                            Addadditional_furnishing('Meter Connection')
+                            Addadditional_furnishing('Meters Connection')
                           }
                         />
                       </View>
@@ -1945,12 +2057,17 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
             )}
           </View>
         )}
+        {console.log(newVideo)}
         {pageNumber == 8 && (
           <View style={{marginBottom: 70}}>
             <View style={styles.videoPreviewCantainer}>
-              {video && (
+              {newVideo && !newVideo.didCancel && (
                 <Video
-                  source={{uri: video.assets && video.assets[0]?.uri}}
+                  source={
+                    newVideo
+                      ? {uri: newVideo.assets && newVideo.assets[0]?.uri}
+                      : {uri: `https://gpropertypay.com/public/videos/${video}`}
+                  }
                   style={{
                     width: WIDTH - 30,
                     height: 300,
@@ -1985,6 +2102,67 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
             <View>
               {images &&
                 images?.map((item, idx) => {
+                  return (
+                    <View key={idx} style={styles.imagemaincaintainer}>
+                      <View style={styles.imagescantainer}>
+                        <Image
+                          style={styles.propertyPic}
+                          source={{
+                            uri: `https://gpropertypay.com/public/uploads/${item.images}`,
+                          }}
+                        />
+                        <View>
+                          <CustomRadioButton
+                            label={'Cover Photo'}
+                            selected={make_display_image == item.images}
+                            onSelect={() => setMake_display_image(item.images)}
+                          />
+                          <TouchableOpacity
+                            onPress={() => removeImg(idx)}
+                            style={{
+                              backgroundColor: '#2196f3',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              borderRadius: 8,
+                              marginVertical: 20,
+                              marginHorizontal: 30,
+                              height: 50,
+                            }}>
+                            <Text
+                              style={{
+                                padding: 10,
+                                textTransform: 'capitalize',
+                                color: '#fff',
+                                fontSize: 18,
+                              }}>
+                              Remove
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                      <View style={[styles.Flooringcontainer, {marginTop: 20}]}>
+                        <Picker
+                          style={styles.picker}
+                          selectedValue={image_type[idx] ? image_type[idx] : ''}
+                          onValueChange={pickerData =>
+                            addImageType(idx, pickerData)
+                          }>
+                          {imageType.map(({label, value}) => (
+                            <Picker.Item
+                              key={label}
+                              label={label}
+                              value={value}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    </View>
+                  );
+                })}
+            </View>
+            <View>
+              {newImages &&
+                newImages?.map((item, idx) => {
                   return (
                     <View key={idx} style={styles.imagemaincaintainer}>
                       <View style={styles.imagescantainer}>
@@ -2030,9 +2208,11 @@ setRoom_data( oneproperty.room_data ? JSON.parse(oneproperty.room_data) : [],)
                       <View style={[styles.Flooringcontainer, {marginTop: 20}]}>
                         <Picker
                           style={styles.picker}
-                          selectedValue={image_type[idx] ? image_type[idx] : ''}
+                          selectedValue={
+                            new_image_type[idx] ? image_type[idx] : ''
+                          }
                           onValueChange={pickerData =>
-                            addImageType(idx, pickerData)
+                            addImageNewType(idx, pickerData)
                           }>
                           {imageType.map(({label, value}) => (
                             <Picker.Item
@@ -2094,6 +2274,22 @@ export default memo(EdtProperty);
 const styles = StyleSheet.create({
   gap: {
     marginTop: 10,
+  },
+  imagemaincaintainer: {
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 4,
+    marginHorizontal: 5,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+
+    elevation: 3,
   },
   heading: {
     fontSize: 18,
@@ -2246,16 +2442,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 4,
     marginHorizontal: 5,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-
-    elevation: 3,
   },
   videoPreviewCantainer: {
     marginHorizontal: 10,

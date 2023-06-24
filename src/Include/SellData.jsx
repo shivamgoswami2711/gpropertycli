@@ -182,20 +182,16 @@ export const RoomType = [
 
 export const PropertyStatus = [
   {
-    label: 'Change Status',
-    value: '',
-  },
-  {
-    label: 'Sold',
-    value: 'Sold',
+    label: 'Sell',
+    value: 'sell',
   },
   {
     label: 'Rent',
-    value: 'Rent',
+    value: 'rent',
   },
   {
     label: 'Sold',
-    value: 'Sold',
+    value: 'sold',
   },
 ];
 

@@ -10,7 +10,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import profilepic from '../../assets/profile.jpg';
+import property from '../../assets/logo.png';
 import {useDispatch, useSelector} from 'react-redux';
 import {recentlyView} from '../../redux/actions/user';
 
@@ -38,6 +38,22 @@ const PropertyView = ({navigation}) => {
     );
   }, [dispatch]);
 
+  function formatNumber(num = 0) {
+    if (num) {
+      if (num >= 1000000000) {
+        return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'G';
+      }
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      }
+      if (num >= 1000) {
+        return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+      }
+      return num;
+    }
+    return ' ';
+  }
+
   return (
     <View>
       <View style={styles.header}>
@@ -51,38 +67,65 @@ const PropertyView = ({navigation}) => {
         </TouchableOpacity>
         <Text
           style={{color: '#fff', fontSize: 20, textTransform: 'capitalize'}}>
-          recently view
+          saved
         </Text>
         <View></View>
       </View>
       <View>
         <FlatList
-          style={{marginTop: 20}}
+          style={{marginTop: 10, marginBottom: 130}}
           data={recentlyViewData}
           onEndReached={loadMoreData}
           ItemSeparatorComponent={() => <View style={{height: 15}} />}
-          renderItem={(item, index) => (
-            <View key={index} style={styles.ViewCantainer}>
-              <View>
-                <Image style={styles.profilePic} source={profilepic} />
+          renderItem={({item, index}) => (
+            <TouchableOpacity
+              activeOpacity={0.5}
+              key={item.recent_id}
+              style={{
+                height: 170,
+                borderRadius: 20,
+                backgroundColor: '#fff',
+              }}
+              onPress={() =>
+                navigation.dispatch(navigation.push(`Post`, {id: item.id}))
+              }>
+              <View style={styles.propertyCantainer}>
+                <View>
+                  <Image
+                    style={styles.propertyProfile}
+                    source={
+                      item.image
+                        ? {
+                            uri: `https://gpropertypay.com/public/uploads/${item.image}`,
+                          }
+                        : property
+                    }
+                  />
+                </View>
+                <View style={{justifyContent: 'space-between', width: 200}}>
+                  <View style={styles.nameEdit}>
+                    <Text
+                      style={
+                        styles.propertyType
+                      }>{`${item.property_type} (${item.property_for})`}</Text>
+                    <Text style={styles.propertyType}>{`₹${formatNumber(
+                      item.expected_price === null
+                        ? item?.monthly_rent
+                        : item?.expected_price,
+                    )}`}</Text>
+                  </View>
+                  <Text style={styles.propertyLocation}>{item.location}</Text>
+                </View>
               </View>
-              <View>
-                <Text style={styles.text}>{item.name}</Text>
-                <Text style={styles.text}>{item.address}</Text>
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(`tel:${item.contact_number}`)}>
-                  <Text style={styles.text}>
-                    {item.contact_number}{' '}
-                    <Ionicons
-                      name="call-outline"
-                      style={{padding: 10, marginLeft: 5}}
-                      size={20}
-                      color="#000"
-                    />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  marginTop: 10,
+                  alignItems: 'center',
+                  marginBottom: 10,
+                }}></View>
+            </TouchableOpacity>
           )}
         />
       </View>
@@ -93,6 +136,34 @@ const PropertyView = ({navigation}) => {
 export default PropertyView;
 
 const styles = StyleSheet.create({
+  propertyProfile: {
+    width: 170,
+    height: 170,
+    resizeMode: 'contain',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+  },
+  propertyCantainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    // columnGap: 10,
+    // paddingHorizontal: 20,
+  },
+  propertyType: {
+    color: '#000',
+    fontSize: 20,
+    textTransform: 'capitalize',
+  },
+  propertyLocation: {
+    color: '#000',
+    fontSize: 16,
+    height: 80,
+    textTransform: 'capitalize',
+    marginTop: 10,
+  },
   ViewCantainer: {
     flexDirection: 'row',
     alignItems: 'center',

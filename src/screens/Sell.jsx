@@ -286,7 +286,7 @@ const Sell = ({navigation}) => {
         </TouchableOpacity>
       </View>
     ),
-    [setPageNumber, pageNumber,saleable_area],
+    [setPageNumber, pageNumber, saleable_area],
   );
 
   const OnAvailableDateslection = date => {
@@ -343,7 +343,10 @@ const Sell = ({navigation}) => {
     formdata.append('light', light);
     formdata.append('fan', fan);
     formdata.append('exhaust_fan', exhaust_fan);
-    formdata.append('additional_room', additional_room);
+    formdata.append(
+      'additional_room',
+      additional_room ? additional_room.toString() : '',
+    );
     formdata.append(
       'additional_furnishing',
       additional_furnishing ? additional_furnishing.toString() : '',
@@ -398,7 +401,7 @@ const Sell = ({navigation}) => {
     });
     formdata.append(
       'make_display_image',
-      make_display_image ? images[0]?.fileName : '',
+      make_display_image ? make_display_image : images?images[0]?.fileName:"",
     );
 
     images &&
@@ -1881,7 +1884,7 @@ const Sell = ({navigation}) => {
         {pageNumber == 8 && (
           <View style={{marginBottom: 70}}>
             <View style={styles.videoPreviewCantainer}>
-              {video && (
+              {video && !newVideo.didCancel && (
                 <Video
                   source={{uri: video.assets && video.assets[0]?.uri}}
                   style={{
@@ -2022,8 +2025,7 @@ const Sell = ({navigation}) => {
   );
 };
 
-export default memo
-(Sell);
+export default memo(Sell);
 
 const styles = StyleSheet.create({
   gap: {

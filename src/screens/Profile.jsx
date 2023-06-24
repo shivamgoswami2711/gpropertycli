@@ -17,7 +17,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Octicons from 'react-native-vector-icons/Octicons';
-import {userUpdate} from '../../redux/actions/user';
+import {changePropertyFor, userUpdate} from '../../redux/actions/user';
 import {useDispatch, useSelector} from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -46,6 +46,13 @@ const Profile = ({navigation}) => {
     }
   }, [profile]);
 
+  function propertyStatusChange(property_for, id, idx) {
+    let statusarry = [...propertyStatus];
+    statusarry[idx] = {id, property_for};
+    setPropertyStatus(statusarry);
+    dispatch(changePropertyFor(id, property_for));
+  }
+
   useEffect(() => {
     dispatch(userproperty({id: userId, uid: profile.uid}));
   }, [dispatch, navigation]);
@@ -54,9 +61,20 @@ const Profile = ({navigation}) => {
   const [name, setName] = useState(profile ? profile.first_name : '');
   const [lName, setLName] = useState(profile ? profile.last_name : '');
   const [email, setEmail] = useState(profile ? profile.email : '');
-  const [propertyStatus, setPropertyStatus] = useState('Padding');
-
+  const [propertyStatus, setPropertyStatus] = useState([]);
   const [image, setImage] = useState('');
+
+  useEffect(() => {
+    function pickerArray() {
+      let statusarry = [...propertyStatus];
+      propertyadded.map((item, idx) => {
+        statusarry[idx] = {id: item.id, property_for: item.property_for};
+      });
+      setPropertyStatus(statusarry);
+    }
+    setPropertyStatus([]);
+    pickerArray();
+  }, [propertyadded]);
 
   async function pickUpImg() {
     try {
@@ -131,7 +149,7 @@ const Profile = ({navigation}) => {
     );
 
   return (
-    <View>
+    <View style={{marginBottom: 100}}>
       <View style={styles.profiledatacaintainer}>
         <View style={styles.profileImgMainCantainer}>
           <Image
@@ -166,98 +184,103 @@ const Profile = ({navigation}) => {
       </View>
       <FlatList
         data={propertyadded}
-        style={{marginBottom: 70}}
-        renderItem={({item, index}) => (
-          <TouchableOpacity
-            key={index}
-            style={{
-              height: 220,
-              margin: 20,
-              borderRadius: 20,
-              backgroundColor: '#fff',
-            }}
-            onPress={() =>
-              navigation.dispatch(navigation.push(`Post`, {id: item.id}))
-            }>
-            <View style={styles.propertyCantainer}>
-              <View>
-                <Image
-                  style={styles.propertyProfile}
-                  source={
-                    item.image
-                      ? {
-                          uri: `https://gpropertypay.com/public/uploads/${item.image}`,
-                        }
-                      : property
-                  }
-                />
-              </View>
-              <View style={{justifyContent: 'space-between', width: 170}}>
-                <View style={styles.nameEdit}>
-                  <Text
-                    style={
-                      styles.propertyType
-                    }>{`${item.property_type} (${item.property_for})`}</Text>
+        style={{marginBottom: 220}}
+        renderItem={({item, index}) => {
+          return (
+            <TouchableOpacity
+              key={index}
+              style={{
+                height: 220,
+                margin: 20,
+                borderRadius: 20,
+                backgroundColor: '#fff',
+              }}
+              onPress={() =>
+                navigation.dispatch(navigation.push(`Post`, {id: item.id}))
+              }>
+              <View style={styles.propertyCantainer}>
+                <View>
+                  <Image
+                    style={styles.propertyProfile}
+                    source={
+                      item.image
+                        ? {
+                            uri: `https://gpropertypay.com/public/uploads/${item.image}`,
+                          }
+                        : property
+                    }
+                  />
                 </View>
-                <Text style={styles.propertyLocation}>{item.location}</Text>
+                <View style={{justifyContent: 'space-between', width: 170}}>
+                  <View style={styles.nameEdit}>
+                    <Text
+                      style={
+                        styles.propertyType
+                      }>{`${item.property_type} (${item.property_for})`}</Text>
+                  </View>
+                  <Text style={styles.propertyLocation}>{item.location}</Text>
+                </View>
+                <View
+                  style={{
+                    justifyContent: 'space-between',
+                    marginVertical: 5,
+                    height: 120,
+                  }}>
+                  <TouchableOpacity
+                    onPress={() => showAlertforProperty(item.id)}>
+                    <Entypo name="cross" size={30} color="#000" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => editpropertyFunc(item.id)}>
+                    <Text
+                      style={{
+                        color: '#000',
+                        backgroundColor: '#c6ddf7',
+                        padding: 5,
+                        borderRadius: 5,
+                      }}>
+                      Edit
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
               <View
                 style={{
-                  justifyContent: 'space-between',
-                  marginVertical: 5,
-                  height: 120,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  marginTop: 10,
+                  alignItems: 'center',
+                  marginBottom: 10,
                 }}>
-                <TouchableOpacity onPress={() => showAlertforProperty(item.id)}>
-                  <Entypo name="cross" size={30} color="#000" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => editpropertyFunc(item.id)}>
-                  <Text
-                    style={{
-                      color: '#000',
-                      backgroundColor: '#c6ddf7',
-                      padding: 5,
-                      borderRadius: 5,
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                  <Octicons
+                    name="dot-fill"
+                    size={40}
+                    color={
+                      item.admin_status == 'Approved'
+                        ? '#03fc3d'
+                        : item.admin_status == 'Pending'
+                        ? '#f5c542'
+                        : '#fc1c03'
+                    }
+                  />
+                  <Text style={{color: '#000'}}>{item.admin_status}</Text>
+                </View>
+                <View style={styles.bedroomcontainer}>
+                  <Picker
+                    style={styles.bedroompicker}
+                    selectedValue={propertyStatus[index]?.property_for}
+                    onValueChange={Status => {
+                      propertyStatusChange(Status, item.id, index);
                     }}>
-                    Edit
-                  </Text>
-                </TouchableOpacity>
+                    {PropertyStatus.map(({label, value}) => (
+                      <Picker.Item key={label} label={label} value={value} />
+                    ))}
+                  </Picker>
+                </View>
               </View>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                marginTop: 10,
-                alignItems: 'center',
-                marginBottom: 10,
-              }}>
-              <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                <Octicons
-                  name="dot-fill"
-                  size={40}
-                  color={
-                    item.admin_status == 'Approved'
-                      ? '#03fc3d'
-                      : item.admin_status == 'Pending'
-                      ? '#f5c542'
-                      : '#fc1c03'
-                  }
-                />
-                <Text style={{color: '#000'}}>{item.admin_status}</Text>
-              </View>
-              <View style={styles.bedroomcontainer}>
-                <Picker
-                  style={styles.bedroompicker}
-                  selectedValue={propertyStatus}
-                  onValueChange={item => setPropertyStatus(item)}>
-                  {PropertyStatus.map(({label, value}) => (
-                    <Picker.Item key={label} label={label} value={value} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
+            </TouchableOpacity>
+          );
+        }}
       />
 
       <Modal visible={profileModule} transparent={true} animationType="slide">
