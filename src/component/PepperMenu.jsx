@@ -50,12 +50,12 @@ const PepperMenu = ({logoutModal, setLogoutModal, navigation}) => {
             onPress={() => navigation.dispatch(navigation.push('PropertyView'))}
             style={styles.Logoutmenu}>
             <AntDesign
-              name="eyeo"
+              name="hearto"
               style={{padding: 10}}
               size={25}
               color="#000"
             />
-            <Text style={{color: '#000'}}>{`save`}</Text>
+            <Text style={{color: '#000'}}>{`   saved`}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>

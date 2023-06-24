@@ -31,7 +31,7 @@ import {useCallback} from 'react';
 import Video from 'react-native-video';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
-import {addNewpropertie, updateproperty} from '../../redux/actions/properties';
+import {addNewpropertie, updateproperty, userproperty} from '../../redux/actions/properties';
 
 // phone size width
 const WIDTH = Dimensions.get('window').width;
@@ -583,7 +583,8 @@ const EdtProperty = ({route, navigation}) => {
       });
 
     dispatch(updateproperty(formdata));
-    // navigation.goBack()
+    dispatch(userproperty({id: userId, uid: profile.uid}));
+    navigation.navigate('Profile')
   }
 
   if (loading) {
