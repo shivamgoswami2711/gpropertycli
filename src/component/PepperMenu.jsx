@@ -15,9 +15,7 @@ const PepperMenu = ({logoutModal, setLogoutModal, navigation}) => {
     setLogoutModal(false);
   }
 
-  function deleteAccount() {
-    setLogoutModal(false);
-  }
+
 
   return (
     <Modal transparent={true} visible={logoutModal}>
@@ -35,15 +33,15 @@ const PepperMenu = ({logoutModal, setLogoutModal, navigation}) => {
             <Text style={{color: '#000'}}>Logout</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => deleteAccount()}
+            // onPress={() => deleteAccount()}
             style={styles.Logoutmenu}>
             <AntDesign
               name="delete"
               style={{padding: 10}}
               size={25}
-              color="#000"
+              color="#ccc"
             />
-            <Text style={{color: '#000'}}>Account</Text>
+            <Text style={{color: '#ccc'}}>Account</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
