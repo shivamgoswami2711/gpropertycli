@@ -86,7 +86,6 @@ export const recentlyView =
       );
       dispatch({type: 'recentlyviewSuccess', payload: data.recently_viewed});
     } catch (error) {
-      console.log(error);
       dispatch({
         type: 'recentlyviewFail',
         payload: error.AxiosError,

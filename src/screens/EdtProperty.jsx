@@ -467,7 +467,7 @@ const EdtProperty = ({route, navigation}) => {
     );
     formdata.append('description', description);
     formdata.append('furnishing_status', furnishing_status);
-    formdata.append('negotiable', negotiable);
+    formdata.append('negotiable', 0);
     formdata.append('wardrobe', wardrobe);
     formdata.append('beds', beds);
     formdata.append('ac', ac);
@@ -569,13 +569,8 @@ const EdtProperty = ({route, navigation}) => {
       });
     formdata.append('old_video', video);
 
-    newVideo &&
-      console.log({
-        uri: newVideo.assets[0].uri,
-        type: 'video/mp4',
-        name: newVideo.assets && newVideo.assets[0]?.uri.split('/').pop(),
-      });
-    newVideo &&
+
+    newVideo && !newVideo.didCancel &&
       formdata.append('video', {
         uri: newVideo.assets[0].uri,
         type: 'video/mp4',
@@ -2058,7 +2053,6 @@ const EdtProperty = ({route, navigation}) => {
             )}
           </View>
         )}
-        {console.log(newVideo)}
         {pageNumber == 8 && (
           <View style={{marginBottom: 70}}>
             <View style={styles.videoPreviewCantainer}>

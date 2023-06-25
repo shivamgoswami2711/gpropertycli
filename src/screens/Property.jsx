@@ -124,7 +124,6 @@ const PropertyListComponet = memo(({item, navigation}) => {
 });
 
 const Property = ({route, navigation}) => {
-  console.log(1);
   const {property_for} = route.params;
   const {address} = route.params;
   const dispatch = useDispatch();
@@ -151,9 +150,7 @@ const Property = ({route, navigation}) => {
     );
   }, [searchAddressSend]);
 
-  console.log(filter)
   useEffect(() => {
-    console.log(2);
     dispatch(propertiespage(1, filter, property_for));
   }, [dispatch, filter, property_for, searchAddressSend]);
 
@@ -176,7 +173,6 @@ const Property = ({route, navigation}) => {
 
   const filterCom = useCallback(
     (propertyData, property_for, setFilter, searchAddressSend) => {
-      console.log(3);
       return (
         <Filter
           max_price={propertyData?.max_price}
@@ -192,7 +188,6 @@ const Property = ({route, navigation}) => {
   );
   const TopF = useCallback(
     (setFilter, filter) => {
-      console.log(3);
       return <TopFilter setFilter={setFilter} filter={filter} />;
     },
     [filter],
@@ -200,7 +195,6 @@ const Property = ({route, navigation}) => {
 
   return (
     <View>
-      {console.log(4)}
       <View>
         <ScrollView
           style={{marginHorizontal: 20, marginTop: 10, flexGrow: 1}}
@@ -245,7 +239,7 @@ const Property = ({route, navigation}) => {
             }}
           />
         </ScrollView>
-        
+
       </View>
       {filterCom(propertyData, property_for, setFilter, searchAddressSend)}
       {/* {TopF(setFilter, filter)} */}

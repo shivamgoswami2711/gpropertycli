@@ -335,7 +335,7 @@ const Sell = ({navigation}) => {
     );
     formdata.append('description', description);
     formdata.append('furnishing_status', furnishing_status);
-    formdata.append('negotiable', negotiable);
+    formdata.append('negotiable', 0);
     formdata.append('wardrobe', wardrobe);
     formdata.append('beds', beds);
     formdata.append('ac', ac);
@@ -413,7 +413,7 @@ const Sell = ({navigation}) => {
         });
       });
 
-    video &&
+    video && !video.didCancel && 
       formdata.append('video', {
         uri: video.assets[0].uri,
         type: 'video/mp4',
@@ -1884,7 +1884,7 @@ const Sell = ({navigation}) => {
         {pageNumber == 8 && (
           <View style={{marginBottom: 70}}>
             <View style={styles.videoPreviewCantainer}>
-              {video && !newVideo.didCancel && (
+              {video && !video.didCancel && (
                 <Video
                   source={{uri: video.assets && video.assets[0]?.uri}}
                   style={{

@@ -72,7 +72,6 @@ const Login = ({navigation}) => {
         navigation.dispatch(navigation.replace('HomePage'));
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -82,7 +81,6 @@ const Login = ({navigation}) => {
       storeUID(result.user.uid);
       setUid(result.user.uid);
     } catch (error) {
-      console.log(error);
       Alert.alert('you have entered incorrect otp');
     }
   }

@@ -2,19 +2,16 @@ import {StyleSheet, Text, ScrollView, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
 
 const TopFilter = ({setFilter, filter}) => {
-    console.log(6)
   const [pfor, setPfor] = useState('');
   const [ptype, setPtype] = useState('');
 
   function setPforState(item) {
-    console.log(7)
     const copy = {...filter};
     copy.propertyFor = item;
     setFilter(copy);
     setPfor(item);
   }
   function setPtypeState(item) {
-    console.log(8)
     const copy = {...filter};
     copy.property_type = item;
     setFilter(copy);

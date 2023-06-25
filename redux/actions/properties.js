@@ -49,10 +49,8 @@ export const updateproperty = formdata => async dispatch => {
         Accept: 'application/json',
       },
     });
-    console.log(data)
     dispatch({type: 'updatepropertySuccess', payload: data});
   } catch (error) {
-    console.log(error)
     dispatch({
       type: 'updatepropertyFail',
       payload: error.AxiosError,
