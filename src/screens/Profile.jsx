@@ -67,7 +67,7 @@ const Profile = ({navigation}) => {
   useEffect(() => {
     function pickerArray() {
       let statusarry = [...propertyStatus];
-      propertyadded.map((item, idx) => {
+      propertyadded && propertyadded.map((item, idx) => {
         statusarry[idx] = {id: item.id, property_for: item.property_for};
       });
       setPropertyStatus(statusarry);

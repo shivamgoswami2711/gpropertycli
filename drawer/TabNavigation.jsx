@@ -134,12 +134,10 @@ const DrawerNavigation = ({navigation}) => {
                       onPress={(data, details = null) => {
                         setSearchAddressText(details.name);
                         setOnSerachClick(false);
-                        setTimeout(() => {
-                          navigation.navigate('Property', {
-                            property_for: 'properties',
-                            address: details.name,
-                          });
-                        }, 70);
+                        navigation.navigate('Property', {
+                          property_for: 'properties',
+                          address: details.name,
+                        });
                       }}
                       renderRow={rowData => {
                         const title = rowData.structured_formatting.main_text;
@@ -191,7 +189,7 @@ const DrawerNavigation = ({navigation}) => {
                       <TouchableOpacity
                         style={{marginRight: 10}}
                         onPress={() => {
-                          navigation.navigate("PropertyView")
+                          navigation.navigate('PropertyView');
                         }}>
                         <AntDesign
                           name="hearto"

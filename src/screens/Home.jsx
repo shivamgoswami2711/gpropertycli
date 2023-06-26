@@ -16,11 +16,28 @@ import housereant from '../../assets/housereant.png';
 import housesale from '../../assets/housesale.png';
 import FlatlistComponent from '../component/FlatlistSmailCard';
 import {propertyHome} from '../../redux/actions/home';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = ({navigation}) => {
   const home = useSelector(state => state.home);
   const property = useSelector(state => state.property);
   const dispatch = useDispatch();
+
+
+  // useEffect(() => {
+  //   const propileCheck = async () => {
+  //     const profileData = await AsyncStorage.getItem('profile');
+  //     if (!profileData) {
+  //       console.log("hello me tha guru")
+  //       console.log(profileData)
+  //       await AsyncStorage.removeItem('uid');
+  //       navigation.dispatch(navigation.push('Login'));
+  //     }
+  //   };
+  //   setTimeout(() => {
+  //     propileCheck()
+  //   }, 100);
+  // }, []);
 
   useEffect(() => {
     const type = ['sell', 'rent'];

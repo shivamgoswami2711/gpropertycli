@@ -25,7 +25,7 @@ export const LoginAction = formdata => async dispatch => {
     });
     const jsonValue = JSON.stringify(data);
     await AsyncStorage.setItem('profile', jsonValue);
-    dispatch({type: 'loginSuccess', payload: data});
+    dispatch({type: 'loginSuccess', payload: data[0]});
   } catch (error) {
     dispatch({
       type: 'loginFail',
@@ -45,6 +45,7 @@ export const localLoginAction = id => async dispatch => {
         Accept: 'application/json',
       },
     });
+    console.log(data)
     const jsonValue = JSON.stringify(data);
     await AsyncStorage.setItem('profile', jsonValue);
     dispatch({type: 'loginSuccess', payload: data[0]});

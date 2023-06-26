@@ -12,11 +12,17 @@ import {
 import React, {useState, useEffect} from 'react';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import profile from '../../assets/profile.jpg';
+import profilePic from '../../assets/profile.jpg';
 import {launchImageLibrary} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/AntDesign';
-import {useDispatch} from 'react-redux';
-import {LoginAction} from '../../redux/actions/user';
+import {useDispatch, useSelector} from 'react-redux';
+import {LoginAction, localLoginAction} from '../../redux/actions/user';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: '806711796840-9ea9tuubbodopmof276r248hi49u0ud3.apps.googleusercontent.com',
+});
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -33,18 +39,14 @@ const Login = ({navigation}) => {
   const [confirm, setConfirm] = useState(null);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState('');
-
-  useEffect(async () => {
-    const uid = await AsyncStorage.getItem('uid');
-    if (uid) {
-      profileModule(true);
-    }
-  }, []);
+  const [googleLogin, setGoogleLogin] = useState(false)
+  // const {profile} = useSelector(state => state.user);
 
   const sendSmsCode = async phoneNumber => {
     if (phoneNumber && phoneNumber.length == 10) {
       try {
         setLoading(true);
+        setGoogleLogin(false)
         let confirmationResult = await auth().signInWithPhoneNumber(
           `+91${phoneNumber}`,
           true,
@@ -54,6 +56,7 @@ const Login = ({navigation}) => {
         setLoading(false);
         Promise.resolve();
       } catch (error) {
+        setLoading(false);
         Alert.alert('something went wrong please try after sometime');
       }
     } else {
@@ -61,24 +64,34 @@ const Login = ({navigation}) => {
     }
   };
 
-  const storeUID = async uid => {
-    try {
-      await AsyncStorage.setItem('uid', uid);
-      const profileData = await AsyncStorage.getItem('profile');
 
-      if (!profileData) {
-        setProfileModule(true);
-      } else {
-        navigation.dispatch(navigation.replace('HomePage'));
-      }
-    } catch (error) {
-    }
-  };
+  async function onGoogleButtonPress() {
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+  
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    setGoogleLogin(true)
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(googleCredential);
+  }
+
+  // useEffect(() => {
+  //   console.log(profile)
+  //   if (!profile) {
+  //     setName(profile ? profile.first_name : '')
+  //     setLName(profile ? profile.last_name : '')
+  //     setEmail(profile ? profile.email : '')
+  //   }
+  // }, [profile]);
 
   async function confirmCode() {
     try {
       const result = await confirm.confirm(otp);
-      storeUID(result.user.uid);
+      setProfileModule(true);
+      // dispatch(localLoginAction(result.user.uid));
       setUid(result.user.uid);
     } catch (error) {
       Alert.alert('you have entered incorrect otp');
@@ -102,7 +115,7 @@ const Login = ({navigation}) => {
   }
 
   async function submitProfile() {
-    if (name && lName && email) {
+    if (name && lName && email && phoneNumber) {
       let formdata = new FormData();
       formdata.append('uid', uid);
       formdata.append('first_name', name);
@@ -116,30 +129,32 @@ const Login = ({navigation}) => {
           name: image?.assets[0]?.uri.split('/').pop(),
         });
       dispatch(LoginAction(formdata));
-      const jsonValue = await AsyncStorage.getItem('profile');
-      if (jsonValue != null) {
-        setUid('');
-        setConfirm('');
-        setProfileModule(false);
-        navigation.dispatch(navigation.replace('HomePage'));
-      }
+      await AsyncStorage.setItem('uid', uid);
+      setUid('');
+      setConfirm('');
+      setProfileModule(false);
+      setGoogleLogin(false)
+      navigation.dispatch(navigation.replace('HomePage'));
     } else {
-      if (!name) Alert.alert('please add name');
-      if (!lName) Alert.alert('please add last name');
-      if (!email) Alert.alert('please add email');
+      if (!name) return Alert.alert('please add name');
+      if (!lName) return Alert.alert('please add last name');
+      if (!email) return Alert.alert('please add email');
+      if (!phoneNumber) return Alert.alert('please add number');
     }
-  }
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text style={{color: '#000', fontSize: 20}}>Sending... OTP</Text>
-      </View>
-    );
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Login</Text>
+      <Image
+        style={styles.loginPic}
+        source={
+          isSmsCodeSent
+            ? require('../../assets/otppic.png')
+            : require('../../assets/loginPic.jpg')
+        }
+      />
+      <Text style={styles.heading}>
+        {isSmsCodeSent ? 'Varify Number' : 'Login'}
+      </Text>
       <View style={styles.form}>
         {isSmsCodeSent ? (
           <View>
@@ -151,17 +166,19 @@ const Login = ({navigation}) => {
                 <Icon name="edit" size={25} color="#000" />
               </TouchableOpacity>
             </View>
-            <View style={styles.formOtp}>
-              <TextInput
-                placeholderTextColor={'#000'}
-                maxLength={6}
-                style={styles.inputOtp}
-                placeholder={'OTP'}
-                value={otp}
-                onChangeText={value => setOtp(value)}
-                keyboardType="phone-pad"
-              />
-            </View>
+            <OTPInputView
+              style={{width: '80%', height: 80, color: '#000'}}
+              pinCount={6}
+              code={otp}
+              editable
+              autoFocusOnLoad
+              onCodeChanged={val => setOtp(val)}
+              codeInputFieldStyle={styles.underlineStyleBase}
+              codeInputHighlightStyle={styles.underlineStyleHighLighted}
+              onCodeFilled={code => {
+                setOtp(code);
+              }}
+            />
           </View>
         ) : (
           <TextInput
@@ -175,27 +192,58 @@ const Login = ({navigation}) => {
           />
         )}
         {isSmsCodeSent ? (
-          <TouchableOpacity style={styles.button} onPress={() => confirmCode()}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {backgroundColor: otp.length == 6 ? '#1E90FF' : '#ccc'},
+            ]}
+            onPress={() => confirmCode()}>
             <Text style={styles.buttonText}>varify</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={styles.button}
             onPress={() => sendSmsCode(phoneNumber)}>
-            <Text style={styles.buttonText}>Send OTP</Text>
+            <Text style={styles.buttonText}>
+              {loading ? 'Sending... OTP' : 'Send OTP'}
+            </Text>
           </TouchableOpacity>
         )}
       </View>
+      <View>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            {
+              paddingHorizontal: 10,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              columnGap: 10,
+              width: 250,
+              marginTop: 100,
+            },
+          ]}
+          onPress={() =>  onGoogleButtonPress().then((data) => {
+            setUid(data.user.uid)
+            setName(data.user.displayName)
+            setEmail(data.user.email)
+            setProfileModule(true)
+            })}>
+          <Icon name="google" size={25} color="#fff" />
+          <Text style={styles.buttonText}>signup with google</Text>
+        </TouchableOpacity>
+      </View>
       <Modal visible={profileModule} transparent={true} animationType="slide">
         <View style={styles.modalCantainer}>
-          <View style={styles.modalBottomCantainer}>
+          <View style={[styles.modalBottomCantainer,{height: googleLogin?560:500}]}>
             <View>
               <View style={styles.profileImgCantainer}>
                 <Image
                   style={styles.profile}
                   source={
                     image.didCancel || !image
-                      ? profile
+                      ? profilePic
                       : {
                           uri: image.assets[0].uri,
                         }
@@ -240,6 +288,16 @@ const Login = ({navigation}) => {
                 onChangeText={value => setEmail(value)}
               />
             </View>
+            {googleLogin && <View style={styles.emailCaintainer}>
+              <Text style={styles.inputLabal}>Number</Text>
+              <TextInput
+                placeholder="Number"
+                placeholderTextColor={'#ccc'}
+                style={styles.inputEmailFild}
+                value={phoneNumber}
+                onChangeText={value => setPhoneNumber(value)}
+              />
+            </View>}
             <View>
               <TouchableOpacity
                 style={styles.profileSubmit}
@@ -257,6 +315,31 @@ const Login = ({navigation}) => {
 export default Login;
 
 const styles = StyleSheet.create({
+  loginPic: {
+    width: 200,
+    height: 200,
+    resizeMode: 'cover',
+  },
+  borderStyleBase: {
+    width: 30,
+    height: 45,
+  },
+
+  borderStyleHighLighted: {
+    borderColor: '#03DAC6',
+  },
+
+  underlineStyleBase: {
+    width: 45,
+    height: 45,
+    borderWidth: 1,
+    marginHorizontal: 3,
+    color: '#000',
+  },
+
+  underlineStyleHighLighted: {
+    borderColor: '#1E90FF',
+  },
   addImgButton: {
     position: 'absolute',
     backgroundColor: '#000',
@@ -301,6 +384,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     borderRadius: 10,
+    fontSize: 16,
+    letterSpacing: 3,
     borderWidth: 1,
     borderColor: '#ccc',
     paddingHorizontal: 10,
@@ -335,7 +420,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalBottomCantainer: {
-    height: 500,
     backgroundColor: '#f2f2f2',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
