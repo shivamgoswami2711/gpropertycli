@@ -7,8 +7,9 @@ import {
   ActivityIndicator,
   View,
   FlatList,
+  PermissionsAndroid,
 } from 'react-native';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import skyline from '../../assets/skyline.jpg';
 import housebuy from '../../assets/housebuy.png';
@@ -16,28 +17,63 @@ import housereant from '../../assets/housereant.png';
 import housesale from '../../assets/housesale.png';
 import FlatlistComponent from '../component/FlatlistSmailCard';
 import {propertyHome} from '../../redux/actions/home';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Geolocation from 'react-native-geolocation-service';
+import Geocoder from 'react-native-geocoding';
 
 const Home = ({navigation}) => {
   const home = useSelector(state => state.home);
   const property = useSelector(state => state.property);
+  const [location, setLOcation] = useState({});
   const dispatch = useDispatch();
 
+  Geocoder.init('AIzaSyDxEmw9qvtFiT7LK8GbfLqyPgv3xN7YFZs');
 
   // useEffect(() => {
-  //   const propileCheck = async () => {
-  //     const profileData = await AsyncStorage.getItem('profile');
-  //     if (!profileData) {
-  //       console.log("hello me tha guru")
-  //       console.log(profileData)
-  //       await AsyncStorage.removeItem('uid');
-  //       navigation.dispatch(navigation.push('Login'));
-  //     }
-  //   };
-  //   setTimeout(() => {
-  //     propileCheck()
-  //   }, 100);
+  //   getLocationAsync();
   // }, []);
+
+  // const getLocationAsync = async () => {
+  //   try {
+  //     const granted = await PermissionsAndroid.request(
+  //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //       {
+  //         title: 'Location Permission',
+  //         message: 'Location ',
+  //         buttonNeutral: 'Ask Me Later',
+  //         buttonNegative: 'Cancel',
+  //         buttonPositive: 'OK',
+  //       },
+  //     );
+  //     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //       Geolocation.getCurrentPosition(
+  //         coords => {
+  //           coords &&
+  //             console.log({
+  //               latitude: coords.coords.latitude,
+  //               longitude: coords.coords.longitude,
+  //             });
+  //           coords &&
+  //             Geocoder.from({
+  //               latitude: coords.coords.latitude,
+  //               longitude: coords.coords.longitude,
+  //             })
+  //               .then(json => {
+  //                 var addressComponent = json.results;
+  //                 console.log(addressComponent);
+  //               })
+  //               .catch(error => console.warn(error));
+  //         },
+  //         error => {
+  //           // See error code charts below.
+  //           Alert.alert(error.message);
+  //         },
+  //         {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+  //       );
+  //     }
+  //   } catch (err) {
+  //     console.warn(err);
+  //   }
+  // };
 
   useEffect(() => {
     const type = ['sell', 'rent'];

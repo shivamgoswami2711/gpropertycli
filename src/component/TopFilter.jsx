@@ -1,21 +1,13 @@
 import {StyleSheet, Text, ScrollView, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
 
-const TopFilter = ({setFilter, filter}) => {
-  const [pfor, setPfor] = useState('');
-  const [ptype, setPtype] = useState('');
+const TopFilter = ({property_type, setProperty_type, propertyFor, setProperty_for}) => {
 
   function setPforState(item) {
-    const copy = {...filter};
-    copy.propertyFor = item;
-    setFilter(copy);
-    setPfor(item);
+    setProperty_for(item);
   }
   function setPtypeState(item) {
-    const copy = {...filter};
-    copy.property_type = item;
-    setFilter(copy);
-    setPtype(item);
+    setProperty_type(item);
   }
   return (
     <ScrollView horizontal={true} style={{height: 48, marginTop: 5}}>
@@ -26,7 +18,7 @@ const TopFilter = ({setFilter, filter}) => {
         TouchableOpacity={0.6}
         style={{
           //   width: 100,
-          borderColor: pfor == 'rent' ? 'blue' : '#787777',
+          borderColor: propertyFor == 'rent' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -36,7 +28,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: pfor == 'rent' ? 'blue' : '#787777',
+            color: propertyFor == 'rent' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -45,12 +37,12 @@ const TopFilter = ({setFilter, filter}) => {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          setPforState('sell');
+          setPforState('buy');
         }}
         TouchableOpacity={0.6}
         style={{
           //   width: 100,
-          borderColor: pfor == 'sell' ? 'blue' : '#787777',
+          borderColor: propertyFor == 'buy' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -60,7 +52,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: pfor == 'sell' ? 'blue' : '#000',
+            color: propertyFor == 'buy' ? 'blue' : '#000',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -76,7 +68,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'Apartments' ? 'blue' : '#787777',
+          borderColor: property_type == 'Apartments' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -85,7 +77,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'Apartments' ? 'blue' : '#787777',
+            color: property_type == 'Apartments' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -100,7 +92,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'House' ? 'blue' : '#787777',
+          borderColor: property_type == 'House' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -109,7 +101,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'House' ? 'blue' : '#787777',
+            color: property_type == 'House' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -124,7 +116,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'Villa' ? 'blue' : '#787777',
+          borderColor: property_type == 'Villa' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -133,7 +125,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'Villa' ? 'blue' : '#787777',
+            color: property_type == 'Villa' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -148,7 +140,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'Shop' ? 'blue' : '#787777',
+          borderColor: property_type == 'Shop' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -157,7 +149,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'Shop' ? 'blue' : '#787777',
+            color: property_type == 'Shop' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -172,7 +164,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'Office' ? 'blue' : '#787777',
+          borderColor: property_type == 'Office' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -181,7 +173,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'Office' ? 'blue' : '#787777',
+            color: property_type == 'Office' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -196,7 +188,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'Hostel' ? 'blue' : '#787777',
+          borderColor: property_type == 'Hostel' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -205,7 +197,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'Hostel' ? 'blue' : '#787777',
+            color: property_type == 'Hostel' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -220,7 +212,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'Pg' ? 'blue' : '#787777',
+          borderColor: property_type == 'Pg' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -229,7 +221,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'Pg' ? 'blue' : '#787777',
+            color: property_type == 'Pg' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -244,7 +236,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'Plot' ? 'blue' : '#787777',
+          borderColor: property_type == 'Plot' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -253,7 +245,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'Plot' ? 'blue' : '#787777',
+            color: property_type == 'Plot' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>
@@ -268,7 +260,7 @@ const TopFilter = ({setFilter, filter}) => {
         style={{
           //   width: 100,
           marginHorizontal: 8,
-          borderColor: ptype == 'Farm' ? 'blue' : '#787777',
+          borderColor: property_type == 'Farm' ? 'blue' : '#787777',
           height: 40,
           borderWidth: 1,
           justifyContent: 'center',
@@ -277,7 +269,7 @@ const TopFilter = ({setFilter, filter}) => {
         <Text
           style={{
             fontSize: 18,
-            color: ptype == 'Farm' ? 'blue' : '#787777',
+            color: property_type == 'Farm' ? 'blue' : '#787777',
             padding: 5,
             paddingHorizontal: 10,
           }}>

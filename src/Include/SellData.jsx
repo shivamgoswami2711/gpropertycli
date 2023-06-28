@@ -250,17 +250,28 @@ export const imageType = [
   },
 ];
 
-
-export function findInitialRegion(coordinates=[]) {
+export function findInitialRegion(coordinates = []) {
   // Initialize the minimum and maximum latitude and longitude
   let minLat = Infinity;
   let maxLat = -Infinity;
   let minlong = Infinity;
   let maxlong = -Infinity;
 
-  // Iterate through each coordinate and update the minimum and maximum values
+  let copycoordinates = [];
   for (let i = 0; i < coordinates.length; i++) {
-    const { lat, long } = coordinates[i];
+    const {lat, long} = coordinates[i];
+    if (
+      Number(lat) < 36 &&
+      Number(lat) > 7 &&
+      Number(long) < 96 &&
+      Number(long) > 68
+    ) {
+      copycoordinates.push(coordinates[i]);
+    }
+  }
+  // Iterate through each coordinate and update the minimum and maximum values
+  for (let i = 0; i < copycoordinates.length; i++) {
+    const {lat, long} = copycoordinates[i];
     minLat = Math.min(minLat, lat);
     maxLat = Math.max(maxLat, lat);
     minlong = Math.min(minlong, long);
@@ -269,17 +280,19 @@ export function findInitialRegion(coordinates=[]) {
 
   // Calculate the center latitude and longitude
   const centerLat = (minLat + maxLat) / 2;
-  const centerlong = (minlong + maxlong) / 2;
-
-  // Calculate the latitude and longitude delta (difference)
-  const latDelta = maxLat - minLat;
-  const longDelta = maxlong - minlong;
+  const centerLng = (minlong + maxlong) / 2;
+  const deltaLat = Math.abs(maxLat - minLat) * 1.2;
+  const deltaLng = Math.abs(maxlong - minlong) * 1.2;
 
   // Return the initial region object
   return {
-    latitude: minLat,
-    longitude: minlong,
-    latitudeDelta:  1,
-    longitudeDelta:  1,
+    latitude: centerLat || 22.809754,
+    longitude: centerLng || 78.321457,
+    latitudeDelta: deltaLat || 1.07922,
+    longitudeDelta: deltaLng || 1.0421,
   };
 }
+  
+  
+  
+  

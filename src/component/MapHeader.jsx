@@ -1,19 +1,18 @@
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
-import React, {memo} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import MapView, {Marker} from 'react-native-maps';
 const WIDTH = Dimensions.get('window').width;
 import {StackActions} from '@react-navigation/native';
-// import { findInitialRegion } from '../Include/SellData';
+import { findInitialRegion } from '../Include/SellData';
 
 const MapHeader = ({title, coordinates = [], navigation}) => {
   
-  // const [initialRegion, setInitialRegion] = useState(null);
+  const [initialRegion, setInitialRegion] = useState(null);
 
 
-  // useEffect(() => {
-  //   setInitialRegion(findInitialRegion(coordinates))
-  // }, [coordinates])
-  // console.log(initialRegion)
+  useEffect(() => {
+    setInitialRegion(findInitialRegion(coordinates))
+  }, [coordinates])
   
   return (
     <View>
@@ -23,12 +22,7 @@ const MapHeader = ({title, coordinates = [], navigation}) => {
             style={styles.map}
             zoomControlEnabled={true}
             loadingEnabled={true}
-            region={{
-              latitude: 22.809754,
-              longitude: 78.321457,
-              latitudeDelta: 10.7922,
-              longitudeDelta: 10.421,
-            }}>
+            region={initialRegion}>
             {coordinates.map((item, index) => (
               <Marker
                 key={index}

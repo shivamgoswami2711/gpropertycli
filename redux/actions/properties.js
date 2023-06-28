@@ -12,7 +12,7 @@ export const propertiespage =
     };
     try {
       dispatch({type: 'propertiesPageRequest'});
-      const {data} = await axios.get(`/${type}?page=${id}`, {params});
+      const {data} = await axios.get(`/properties?page=${id}`, {params});
       dispatch({type: 'propertiesPageSuccess', payload: data});
     } catch (error) {
       dispatch({

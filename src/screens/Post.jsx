@@ -216,7 +216,6 @@ const Post = ({route, navigation}) => {
           showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
         />
-        
       </View>
       <View>
         {/* logo view */}
@@ -541,6 +540,7 @@ const Post = ({route, navigation}) => {
             )}
             {data &&
               data.property_for == 'rent' &&
+              data.room_data &&
               JSON.parse(data.room_data)[0].no_of_rooms && (
                 <View style={{paddingVertical: 20}}>
                   <Text
@@ -1079,9 +1079,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     color: '#000',
   },
-  descriptionText: {
-    marginLeft: 20,
-  },
+  descriptionText: {color: '#000', marginLeft: 20},
   logoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

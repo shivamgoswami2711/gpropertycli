@@ -42,29 +42,30 @@ const Filter = ({
   max_price,
   min_price,
   property_type,
-  location,
-  callback,
   title,
+  location,
+  ptype,
+  setPtype,
+  pFor,
+  setPfor,
+  callback,
 }) => {
   const [filterContainerOn, setFilterContainerOn] = useState(false);
-  const [property1, setProperty1] = useState('');
-  const [propertyFor, setPropertyFor] = useState('');
   const [minMaxValue, setMinMaxValue] = useState({
     min: min_price,
     max: max_price,
   });
-  
   useEffect(() => {
     setTimeout(() => {
       callback({
-        property_type: property1,
-        propertyFor: propertyFor,
+        property_type: ptype,
+        propertyFor: pFor == 'buy'?"sell":"rent",
         location,
         min: minMaxValue.min,
         max: minMaxValue.max,
       });
-    }, 1200);
-  }, [property1, minMaxValue, propertyFor, location]);
+    }, 500);
+  }, [ptype, minMaxValue, pFor, location, ptype, pFor]);
 
   const property2Options = [
     {label: 'All', value: ''},
@@ -135,16 +136,16 @@ const Filter = ({
             <PropertySelector
               propName="Property for"
               options={property_forOption}
-              propValue={propertyFor}
+              propValue={pFor}
               disable={title == 'properties'}
-              onValueChange={value => setPropertyFor(value)}
+              onValueChange={value => setPfor(value)}
             />
             <PropertySelector
               propName="Property type"
               title=""
               options={property2Options}
-              propValue={property1}
-              onValueChange={value => setProperty1(value)}
+              propValue={ptype}
+              onValueChange={value => setPtype(value)}
             />
           </View>
           <View style={styles.MaxMinMainContainer}>

@@ -52,7 +52,7 @@ const PropertyListComponet = memo(({item, navigation}) => {
         const pushAction = StackActions.push(`Post`, {id: item.id});
         setTimeout(() => {
           navigation.dispatch(pushAction);
-        }, 150);
+        }, 40);
       }}>
       <View style={styles.mainContainer}>
         <View>
@@ -79,7 +79,7 @@ const PropertyListComponet = memo(({item, navigation}) => {
         </View>
         <View>
           <Text style={styles.title}>
-            {item?.property_type} {item?.property_for}{' '}
+            {item?.property_type} for {item?.property_for}{' '}
             {` (${
               item?.property_for == 'sell'
                 ? formatNumber(item?.expected_price)
@@ -100,7 +100,12 @@ const PropertyListComponet = memo(({item, navigation}) => {
             <Text style={styles.dateContainerText}>
               {item?.bathrooms} Bathrooms
             </Text>
-            <Text style={styles.dimenSionText}>1000 sq/Feet</Text>
+            <Text style={styles.dimenSionText}>
+              {item.saleable_area}{' '}
+              {item?.saleable_area_size_in == 'Feet'
+                ? `sp/${item?.saleable_area_size_in}`
+                : item?.saleable_area_size_in}
+            </Text>
           </View>
         </View>
         <View style={styles.imgandDateContainer}>
@@ -128,12 +133,21 @@ const Property = ({route, navigation}) => {
   const {address} = route.params;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState({});
+  const [propertyFor, setProperty_for] = useState(property_for || '');
+  const [property_type, setProperty_type] = useState('');
   const propertyData = useSelector(state => state.property);
-  const [searchAddress, setSearchAddress] = useState(address);
+  const [searchAddress, setSearchAddress] = useState(address || '');
   const [searchAddressSend, setSearchAddressSend] = useState('');
   const [currentPage, setCurrentPage] = useState(
     propertyData?.current_page || 1,
   );
+  const [counterNumber, setCounterNumber] = useState(0);
+  useEffect(() => {
+    if (searchAddress.length == 0) {
+      setSearchAddressSend('');
+      setCounterNumber(1);
+    }
+  }, [searchAddress]);
 
   useEffect(() => {
     setSearchAddress(
@@ -142,21 +156,35 @@ const Property = ({route, navigation}) => {
   }, [address]);
 
   useEffect(() => {
+    console.log(
+      searchAddressSend
+    );
     setSearchAddress(
-      searchAddressSend ? searchAddressSend : address ? address : '',
+      searchAddressSend
+        ? searchAddressSend.length == 0
+          ? ''
+          : searchAddressSend
+        : counterNumber== 1?"": address
+        ? address
+        : '',
     );
     setSearchAddressSend(
-      searchAddressSend ? searchAddressSend : address ? address : '',
+      searchAddressSend
+        ? searchAddressSend.length == 0
+          ? ''
+          : searchAddressSend
+        : counterNumber== 1?"": address
+        ? address
+        : '',
     );
   }, [searchAddressSend]);
 
   useEffect(() => {
-    dispatch(propertiespage(1, filter, property_for));
-  }, [dispatch, filter, property_for, searchAddressSend]);
-
+    dispatch(propertiespage(1, filter, propertyFor));
+  }, [dispatch, filter, propertyFor, searchAddressSend]);
   const loadMoreData = () => {
     if (propertyData?.last_page > currentPage) {
-      dispatch(propertiespage(currentPage + 1, filter, property_for));
+      dispatch(propertiespage(currentPage + 1, filter, propertyFor));
       setCurrentPage(currentPage + 1);
     }
   };
@@ -172,23 +200,41 @@ const Property = ({route, navigation}) => {
   };
 
   const filterCom = useCallback(
-    (propertyData, property_for, setFilter, searchAddressSend) => {
+    (
+      propertyData,
+      searchAddressSend,
+      property_type,
+      propertyFor,
+      setProperty_for,
+      setFilter,
+    ) => {
       return (
         <Filter
           max_price={propertyData?.max_price}
           min_price={propertyData?.min_price}
           property_type={propertyData?.property_type}
-          title={property_for}
+          title={propertyFor}
           location={searchAddressSend}
+          ptype={property_type}
+          setPtype={setProperty_type}
+          pFor={propertyFor}
+          setPfor={setProperty_for}
           callback={setFilter}
         />
       );
     },
-    [searchAddressSend],
+    [searchAddressSend, property_type, propertyFor],
   );
   const TopF = useCallback(
-    (setFilter, filter) => {
-      return <TopFilter setFilter={setFilter} filter={filter} />;
+    (property_type, setProperty_type, propertyFor, setProperty_for) => {
+      return (
+        <TopFilter
+          property_type={property_type}
+          setProperty_type={setProperty_type}
+          propertyFor={propertyFor}
+          setProperty_for={setProperty_for}
+        />
+      );
     },
     [filter],
   );
@@ -239,10 +285,16 @@ const Property = ({route, navigation}) => {
             }}
           />
         </ScrollView>
-
       </View>
-      {filterCom(propertyData, property_for, setFilter, searchAddressSend)}
-      {/* {TopF(setFilter, filter)} */}
+      {filterCom(
+        propertyData,
+        searchAddressSend,
+        property_type,
+        propertyFor,
+        setProperty_for,
+        setFilter,
+      )}
+      {TopF(property_type, setProperty_type, propertyFor, setProperty_for)}
       <FlatList
         data={propertyData?.property || []}
         renderItem={({Property, item}) => (
@@ -257,7 +309,7 @@ const Property = ({route, navigation}) => {
         ListHeaderComponent={() =>
           useCallback(
             <MapHeader
-              title={property_for}
+              title={propertyFor}
               coordinates={propertyData?.coordinates}
               navigation={navigation}
             />,
