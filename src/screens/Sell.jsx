@@ -32,6 +32,9 @@ import Video from 'react-native-video';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import {addNewpropertie} from '../../redux/actions/properties';
+import NetInfo from '@react-native-community/netinfo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 // phone size width
 const WIDTH = Dimensions.get('window').width;
 
@@ -40,6 +43,7 @@ const Sell = ({navigation}) => {
   const dispatch = useDispatch();
   const bedroomsNumber = BedroomsNumber();
   const {profile} = useSelector(state => state.user);
+  const [netinformation, setNetinformation] = useState(true);
 
   // adding 1rk in bedroom picker data
   bedroomsNumber.push({
@@ -57,6 +61,17 @@ const Sell = ({navigation}) => {
         navigation.dispatch(navigation.push('Login'));
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setNetinformation(state.isConnected);
+    });
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   // all vareable
@@ -401,7 +416,11 @@ const Sell = ({navigation}) => {
     });
     formdata.append(
       'make_display_image',
-      make_display_image ? make_display_image : images?images[0]?.fileName:"",
+      make_display_image
+        ? make_display_image
+        : images
+        ? images[0]?.fileName
+        : '',
     );
 
     images &&
@@ -413,7 +432,8 @@ const Sell = ({navigation}) => {
         });
       });
 
-    video && !video.didCancel && 
+    video &&
+      !video.didCancel &&
       formdata.append('video', {
         uri: video.assets[0].uri,
         type: 'video/mp4',
@@ -425,8 +445,47 @@ const Sell = ({navigation}) => {
     navigation.dispatch(navigation.replace('HomePage'));
   }
 
+  if (!netinformation) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Image
+          style={{width: 300, height: 300, resizeMode: 'contain'}}
+          source={require('../../assets/offline.jpg')}
+        />
+        <Text style={{color: '#ccc', fontSize: 24, fontWeight: 800}}>
+          Offline
+        </Text>
+      </View>
+    );
+  }
   return (
     <View>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <AntDesign
+            name="arrowleft"
+            style={{padding: 10}}
+            size={30}
+            color="#fff"
+          />
+        </TouchableOpacity>
+        <Text
+          style={{
+            color: '#fff',
+            fontSize: 20,
+            marginLeft: -50,
+            textTransform: 'capitalize',
+          }}>
+          Add Property
+        </Text>
+        <View></View>
+      </View>
       <ScrollView ref={scrollRef}>
         {pageNumber == 1 && (
           <TypeOfProperty
@@ -847,6 +906,7 @@ const Sell = ({navigation}) => {
                   <Modal
                     animationType="slide"
                     transparent={true}
+                    onRequestClose={() => setShowAvailableDatePicker(false)}
                     visible={showAvailableDatePicker}>
                     <TouchableOpacity
                       TouchableOpacity={0}
@@ -2028,6 +2088,14 @@ const Sell = ({navigation}) => {
 export default memo(Sell);
 
 const styles = StyleSheet.create({
+  header: {
+    height: 60,
+    backgroundColor: '#3959f7',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
   gap: {
     marginTop: 10,
   },

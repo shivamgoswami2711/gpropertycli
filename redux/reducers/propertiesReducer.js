@@ -1,7 +1,9 @@
 import {createReducer} from '@reduxjs/toolkit';
 const initialState = {
   property: [],
+  propertyrent: [],
   coordinates: [],
+  Propertyseved: [],
   current_page: 1,
   total: 0,
   last_page: 0,
@@ -95,6 +97,7 @@ export const propertiesReducer = createReducer(initialState, builder => {
           ...action.payload.sale_properties.data,
         ];
       }
+      // console.log(action.payload)
       state.total = action.payload.sale_properties.total;
       state.last_page = action.payload.sale_properties.last_page;
       state.max_price = action.payload.max_price;
@@ -104,6 +107,33 @@ export const propertiesReducer = createReducer(initialState, builder => {
     })
 
     .addCase('propertiesPageFail', (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase('propertiesrentPageRequest', state => {
+      state.loading = true;
+    })
+    .addCase('propertiesrentPageSuccess', (state, action) => {
+      state.loading = false;
+      state.current_page = action.payload.sale_properties.current_page;
+      if (state.current_page == 1) {
+        state.propertyrent = action.payload.sale_properties.data;
+      } else {
+        state.propertyrent = [
+          ...state.propertyrent,
+          ...action.payload.sale_properties.data,
+        ];
+      }
+      // console.log(action.payload)
+      state.total = action.payload.sale_properties.total;
+      state.last_page = action.payload.sale_properties.last_page;
+      state.max_price = action.payload.max_price;
+      state.min_price = action.payload.min_price;
+      state.property_type = action.payload.property_type;
+      state.coordinates = action.payload.coordinates;
+    })
+
+    .addCase('propertiesrentPageFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
     })
@@ -136,6 +166,17 @@ export const propertiesReducer = createReducer(initialState, builder => {
       state.oneproperty = action.payload;
     })
     .addCase('onepropertyFail', (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase('ropertysevedRequest', state => {
+      state.loading = true;
+    })
+    .addCase('PropertysevedSuccess', (state, action) => {
+      state.loading = false;
+      state.Propertyseved = action.payload;
+    })
+    .addCase('PropertysevedFail', (state, action) => {
       state.loading = false;
       state.error = action.payload;
     });

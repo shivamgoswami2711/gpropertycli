@@ -8,20 +8,27 @@ import {
   Image,
   Modal,
   Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import profilePic from '../../assets/profile.jpg';
 import {launchImageLibrary} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {useDispatch, useSelector} from 'react-redux';
-import {LoginAction, localLoginAction} from '../../redux/actions/user';
+import {LoginAction, setuser} from '../../redux/actions/user';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import axios from 'axios';
+import NetInfo from '@react-native-community/netinfo';
 
 GoogleSignin.configure({
-  webClientId: '806711796840-9ea9tuubbodopmof276r248hi49u0ud3.apps.googleusercontent.com',
+  webClientId:
+    '806711796840-9ea9tuubbodopmof276r248hi49u0ud3.apps.googleusercontent.com',
 });
 
 const WIDTH = Dimensions.get('window').width;
@@ -35,18 +42,45 @@ const Login = ({navigation}) => {
   const [uid, setUid] = useState('');
   const [lName, setLName] = useState('');
   const [email, setEmail] = useState('');
+  const [city, setCity] = useState('');
+  const [token, setToken] = useState('');
+  const [logintype, setLogintype] = useState('yes');
   const [isSmsCodeSent, setIsSmsCodeSent] = useState(false);
   const [confirm, setConfirm] = useState(null);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState('');
-  const [googleLogin, setGoogleLogin] = useState(false)
-  // const {profile} = useSelector(state => state.user);
+  const [googleLogin, setGoogleLogin] = useState(false);
+  const [playservices, setPlayservices] = useState(true);
+  const otpRef = useRef(null);
+  const [netinformation, setNetinformation] = useState(true);
+  const [loginprocess, setLoginprocess] = useState(false);
 
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setNetinformation(state.isConnected);
+    });
+    getToken();
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (otpRef.current) {
+      setTimeout(() => otpRef.current.focusField(1), 250);
+    }
+  }, [otpRef.current]);
+
+  async function getToken() {
+    const fcmtoken = await AsyncStorage.getItem('fcmToken');
+    setToken(fcmtoken);
+  }
   const sendSmsCode = async phoneNumber => {
     if (phoneNumber && phoneNumber.length == 10) {
       try {
         setLoading(true);
-        setGoogleLogin(false)
+        setGoogleLogin(false);
         let confirmationResult = await auth().signInWithPhoneNumber(
           `+91${phoneNumber}`,
           true,
@@ -61,21 +95,30 @@ const Login = ({navigation}) => {
       }
     } else {
       Alert.alert('please enter correct number');
+      setLoginprocess(false);
     }
   };
 
-
   async function onGoogleButtonPress() {
-    // Check if your device supports Google Play
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    // Get the users ID token
-    const { idToken } = await GoogleSignin.signIn();
-  
-    // Create a Google credential with the token
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    setGoogleLogin(true)
-    // Sign-in the user with the credential
-    return auth().signInWithCredential(googleCredential);
+    try {
+      setLoginprocess(true);
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+      // Get the users ID token
+      const {idToken} = await GoogleSignin.signIn();
+
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      setGoogleLogin(true);
+      // Sign-in the user with the credential
+      return auth().signInWithCredential(googleCredential);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        setLoginprocess(false);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        setPlayservices(true);
+      }
+    }
   }
 
   // useEffect(() => {
@@ -88,11 +131,23 @@ const Login = ({navigation}) => {
   // }, [profile]);
 
   async function confirmCode() {
+    if (loginprocess) return;
     try {
+      setLoginprocess(true);
       const result = await confirm.confirm(otp);
-      setProfileModule(true);
-      // dispatch(localLoginAction(result.user.uid));
-      setUid(result.user.uid);
+      const {data} = await axios.get(`/getuser?uid=${result.user.uid}`);
+
+      if (data.length == 1) {
+        await AsyncStorage.setItem('uid', result.user.uid);
+        dispatch(setuser(data));
+        setUid(result.user.uid);
+        setLoginprocess(false);
+        navigation.dispatch(navigation.replace('HomePage'));
+      } else {
+        setProfileModule(true);
+        setUid(result.user.uid);
+        setLoginprocess(false);
+      }
     } catch (error) {
       Alert.alert('you have entered incorrect otp');
     }
@@ -115,6 +170,7 @@ const Login = ({navigation}) => {
   }
 
   async function submitProfile() {
+    setLoginprocess(true);
     if (name && lName && email && phoneNumber) {
       let formdata = new FormData();
       formdata.append('uid', uid);
@@ -122,6 +178,9 @@ const Login = ({navigation}) => {
       formdata.append('last_name', lName);
       formdata.append('email', email);
       formdata.append('contact_number', phoneNumber);
+      formdata.append('token', token);
+      formdata.append('city', city);
+      formdata.append('logintype', logintype);
       image &&
         formdata.append('image', {
           uri: image?.assets[0]?.uri,
@@ -133,7 +192,8 @@ const Login = ({navigation}) => {
       setUid('');
       setConfirm('');
       setProfileModule(false);
-      setGoogleLogin(false)
+      setGoogleLogin(false);
+      setLoginprocess(false);
       navigation.dispatch(navigation.replace('HomePage'));
     } else {
       if (!name) return Alert.alert('please add name');
@@ -142,172 +202,247 @@ const Login = ({navigation}) => {
       if (!phoneNumber) return Alert.alert('please add number');
     }
   }
+
   return (
-    <View style={styles.container}>
-      <Image
-        style={styles.loginPic}
-        source={
-          isSmsCodeSent
-            ? require('../../assets/otppic.png')
-            : require('../../assets/loginPic.jpg')
-        }
-      />
-      <Text style={styles.heading}>
-        {isSmsCodeSent ? 'Varify Number' : 'Login'}
-      </Text>
-      <View style={styles.form}>
-        {isSmsCodeSent ? (
-          <View>
-            <View style={styles.formNumberEdit}>
-              <Text style={{color: '#000', fontSize: 18}}>{phoneNumber}</Text>
-              <TouchableOpacity
-                style={{marginLeft: 5}}
-                onPress={() => setIsSmsCodeSent(false)}>
-                <Icon name="edit" size={25} color="#000" />
-              </TouchableOpacity>
+    <View style={{flex: 1}}>
+      {loginprocess && (
+        <View
+          style={{
+            height: 35,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#FFFF00',
+            zIndex: 1,
+          }}>
+          <Text style={{fontSize: 16, color: 'blue'}}>processing....</Text>
+        </View>
+      )}
+      {!netinformation && (
+        <View
+          style={{
+            zIndex: 1,
+            height: 35,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'red',
+          }}>
+          <Text style={{fontSize: 16, color: '#fff'}}>Offline 😞</Text>
+        </View>
+      )}
+      <View style={styles.container}>
+        <Image
+          style={styles.loginPic}
+          source={
+            isSmsCodeSent
+              ? require('../../assets/otppic.png')
+              : require('../../assets/loginPic.jpg')
+          }
+        />
+        <Text style={styles.heading}>
+          {isSmsCodeSent ? 'Varify Number' : 'Login'}
+        </Text>
+        <View style={styles.form}>
+          {isSmsCodeSent ? (
+            <View>
+              <View style={styles.formNumberEdit}>
+                <Text style={{color: '#000', fontSize: 18}}>{phoneNumber}</Text>
+                <TouchableOpacity
+                  style={{marginLeft: 5}}
+                  onPress={() => {
+                    setLoginprocess(false);
+                    setIsSmsCodeSent(false);
+                  }}>
+                  <Icon name="edit" size={25} color="#000" />
+                </TouchableOpacity>
+              </View>
+              <OTPInputView
+                ref={otpRef}
+                autoFocusOnLoad={false}
+                style={{width: '80%', height: 80, color: '#000'}}
+                pinCount={6}
+                code={otp}
+                editable
+                onCodeChanged={val => setOtp(val)}
+                codeInputFieldStyle={styles.underlineStyleBase}
+                codeInputHighlightStyle={styles.underlineStyleHighLighted}
+                onCodeFilled={code => {
+                  setOtp(code);
+                }}
+              />
             </View>
-            <OTPInputView
-              style={{width: '80%', height: 80, color: '#000'}}
-              pinCount={6}
-              code={otp}
-              editable
-              autoFocusOnLoad
-              onCodeChanged={val => setOtp(val)}
-              codeInputFieldStyle={styles.underlineStyleBase}
-              codeInputHighlightStyle={styles.underlineStyleHighLighted}
-              onCodeFilled={code => {
-                setOtp(code);
-              }}
+          ) : (
+            <TextInput
+              placeholderTextColor={'#000'}
+              maxLength={10}
+              style={styles.input}
+              value={phoneNumber}
+              onChangeText={value => setPhoneNumber(value)}
+              placeholder={'Enter 10 digit phone number'}
+              keyboardType="phone-pad"
             />
-          </View>
-        ) : (
-          <TextInput
-            placeholderTextColor={'#000'}
-            maxLength={10}
-            style={styles.input}
-            value={phoneNumber}
-            onChangeText={value => setPhoneNumber(value)}
-            placeholder={'Enter 10 digit phone number'}
-            keyboardType="phone-pad"
-          />
-        )}
-        {isSmsCodeSent ? (
+          )}
+          {isSmsCodeSent ? (
+            <TouchableOpacity
+              style={[
+                styles.button,
+                {
+                  backgroundColor:
+                    otp.length == 6 && !loginprocess ? '#1E90FF' : '#ccc',
+                },
+              ]}
+              onPress={() => confirmCode()}>
+              <Text style={styles.buttonText}>verify</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => sendSmsCode(phoneNumber)}>
+              <Text style={styles.buttonText}>
+                {loading ? 'Sending... OTP' : 'Send OTP'}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <View>
           <TouchableOpacity
             style={[
               styles.button,
-              {backgroundColor: otp.length == 6 ? '#1E90FF' : '#ccc'},
+              {
+                paddingHorizontal: 10,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                columnGap: 10,
+                width: 250,
+                marginTop: 100,
+              },
             ]}
-            onPress={() => confirmCode()}>
-            <Text style={styles.buttonText}>varify</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => sendSmsCode(phoneNumber)}>
-            <Text style={styles.buttonText}>
-              {loading ? 'Sending... OTP' : 'Send OTP'}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-      <View>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            {
-              paddingHorizontal: 10,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              columnGap: 10,
-              width: 250,
-              marginTop: 100,
-            },
-          ]}
-          onPress={() =>  onGoogleButtonPress().then((data) => {
-            setUid(data.user.uid)
-            setName(data.user.displayName)
-            setEmail(data.user.email)
-            setProfileModule(true)
-            })}>
-          <Icon name="google" size={25} color="#fff" />
-          <Text style={styles.buttonText}>signup with google</Text>
-        </TouchableOpacity>
-      </View>
-      <Modal visible={profileModule} transparent={true} animationType="slide">
-        <View style={styles.modalCantainer}>
-          <View style={[styles.modalBottomCantainer,{height: googleLogin?560:500}]}>
-            <View>
-              <View style={styles.profileImgCantainer}>
-                <Image
-                  style={styles.profile}
-                  source={
-                    image.didCancel || !image
-                      ? profilePic
-                      : {
-                          uri: image.assets[0].uri,
-                        }
+            onPress={() => {
+              playservices
+                ? () => {
+                    onGoogleButtonPress().then(async result => {
+                      const {data} = await axios.get(
+                        `/getuser?uid=${result.user.uid}`,
+                      );
+                      if (data.length == 1) {
+                        await AsyncStorage.setItem('uid', result.user.uid);
+                        dispatch(setuser(data));
+                        setUid(result.user.uid);
+                        setLoginprocess(false);
+                        navigation.dispatch(navigation.replace('HomePage'));
+                      } else {
+                        setLogintype('no');
+                        setProfileModule(true);
+                        setUid(result.user.uid);
+                        setUid(result.user.uid);
+                        setName(result.user.displayName);
+                        setEmail(result.user.email);
+                        setLoginprocess(false);
+                      }
+                    });
                   }
-                />
-                <TouchableOpacity
-                  onPress={() => pickUpImg()}
-                  style={styles.addImgButton}>
-                  <Icon name="plus" size={30} color="#fff" />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.NameCaintainer}>
-              <View>
-                <Text style={styles.inputLabal}>Name</Text>
-                <TextInput
-                  placeholder="Name"
-                  placeholderTextColor={'#ccc'}
-                  style={styles.inputFild}
-                  value={name}
-                  onChangeText={value => setName(value)}
-                />
-              </View>
-              <View>
-                <Text style={styles.inputLabal}>Last Name</Text>
-                <TextInput
-                  placeholder="Last Name"
-                  placeholderTextColor={'#ccc'}
-                  style={styles.inputFild}
-                  value={lName}
-                  onChangeText={value => setLName(value)}
-                />
-              </View>
-            </View>
-            <View style={styles.emailCaintainer}>
-              <Text style={styles.inputLabal}>Email</Text>
-              <TextInput
-                placeholder="Email"
-                placeholderTextColor={'#ccc'}
-                style={styles.inputEmailFild}
-                value={email}
-                onChangeText={value => setEmail(value)}
-              />
-            </View>
-            {googleLogin && <View style={styles.emailCaintainer}>
-              <Text style={styles.inputLabal}>Number</Text>
-              <TextInput
-                placeholder="Number"
-                placeholderTextColor={'#ccc'}
-                style={styles.inputEmailFild}
-                value={phoneNumber}
-                onChangeText={value => setPhoneNumber(value)}
-              />
-            </View>}
-            <View>
-              <TouchableOpacity
-                style={styles.profileSubmit}
-                onPress={() => submitProfile()}>
-                <Text style={styles.buttonText}>Submit</Text>
-              </TouchableOpacity>
+                : '';
+            }}>
+            <Icon name="google" size={25} color="#fff" />
+            <Text style={styles.buttonText}>signup with google</Text>
+          </TouchableOpacity>
+        </View>
+        <Modal visible={profileModule} transparent={true} animationType="slide">
+          <View style={styles.modalCantainer}>
+            <View
+              style={[
+                styles.modalBottomCantainer,
+                {height: googleLogin ? 600 : 600},
+              ]}>
+              <KeyboardAvoidingView behavior="position">
+                <View>
+                  <View style={styles.profileImgCantainer}>
+                    <Image
+                      style={styles.profile}
+                      source={
+                        image.didCancel || !image
+                          ? profilePic
+                          : {
+                              uri: image.assets[0].uri,
+                            }
+                      }
+                    />
+                    <TouchableOpacity
+                      onPress={() => pickUpImg()}
+                      style={styles.addImgButton}>
+                      <Icon name="plus" size={30} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <View style={styles.NameCaintainer}>
+                  <View>
+                    <Text style={styles.inputLabal}>Name</Text>
+                    <TextInput
+                      placeholder="Name"
+                      placeholderTextColor={'#ccc'}
+                      style={styles.inputFild}
+                      value={name}
+                      onChangeText={value => setName(value)}
+                    />
+                  </View>
+                  <View>
+                    <Text style={styles.inputLabal}>Last Name</Text>
+                    <TextInput
+                      placeholder="Last Name"
+                      placeholderTextColor={'#ccc'}
+                      style={styles.inputFild}
+                      value={lName}
+                      onChangeText={value => setLName(value)}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.NameCaintainer}>
+                  <View>
+                    <Text style={styles.inputLabal}>City</Text>
+                    <TextInput
+                      placeholder="City"
+                      placeholderTextColor={'#ccc'}
+                      style={styles.inputFild}
+                      value={city}
+                      onChangeText={value => setCity(value)}
+                    />
+                  </View>
+                  {googleLogin && (
+                    <View>
+                      <Text style={styles.inputLabal}>Number</Text>
+                      <TextInput
+                        placeholder="Number"
+                        placeholderTextColor={'#ccc'}
+                        style={styles.inputFild}
+                        value={phoneNumber}
+                        onChangeText={value => setPhoneNumber(value)}
+                      />
+                    </View>
+                  )}
+                </View>
+                <View style={styles.emailCaintainer}>
+                  <Text style={styles.inputLabal}>Email</Text>
+                  <TextInput
+                    placeholder="Email"
+                    placeholderTextColor={'#ccc'}
+                    style={styles.inputEmailFild}
+                    value={email}
+                    onChangeText={value => setEmail(value)}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={styles.profileSubmit}
+                    onPress={() => submitProfile()}>
+                    <Text style={styles.buttonText}>Submit</Text>
+                  </TouchableOpacity>
+                </View>
+              </KeyboardAvoidingView>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </View>
     </View>
   );
 };

@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import profile from '../../assets/profile.jpg';
 import Filter from '../../component/Filter';
 import MapHeader from '../component/MapHeader';
-import {propertiespage} from '../../redux/actions/properties';
+import {propertiesrentpage} from '../../redux/actions/properties';
 import Icon from 'react-native-vector-icons/Fontisto';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MapView, {Marker} from 'react-native-maps';
@@ -129,13 +129,13 @@ const PropertyListComponet = memo(({item, navigation}) => {
   );
 });
 
-const Property = ({route, navigation}) => {
+const Propertyrent = ({route, navigation}) => {
   const {property_for} = route.params;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState({});
   const [propertyFor, setProperty_for] = useState(property_for || '');
   const [property_type, setProperty_type] = useState('');
-  const propertyData = useSelector(state => state.property);
+  const propertyrentData = useSelector(state => state.property);
   const [searchAddress, setSearchAddress] = useState('');
   const [searchAddressSend, setSearchAddressSend] = useState('');
   const [netinformation, setNetinformation] = useState(true);
@@ -152,7 +152,7 @@ const Property = ({route, navigation}) => {
   }, []);
 
   const [currentPage, setCurrentPage] = useState(
-    propertyData?.current_page || 1,
+    propertyrentData?.current_page || 1,
   );
 
   useEffect(() => {
@@ -166,19 +166,20 @@ const Property = ({route, navigation}) => {
   }, [searchAddressSend]);
 
   useEffect(() => {
-    dispatch(propertiespage(1, filter, propertyFor));
+    dispatch(propertiesrentpage(1, filter, propertyFor));
   }, [dispatch, filter, propertyFor, searchAddressSend]);
   const loadMoreData = () => {
-    if (propertyData?.last_page > currentPage) {
-      dispatch(propertiespage(currentPage + 1, filter, propertyFor));
+    if (propertyrentData?.last_page > currentPage) {
+      dispatch(propertiesrentpage(currentPage + 1, filter, propertyFor));
       setCurrentPage(currentPage + 1);
     }
   };
+  console.log(propertyrentData)
 
   const renderFooter = () => {
     return (
       <View style={styles.footer}>
-        {propertyData.loading && (
+        {propertyrentData.loading && (
           <ActivityIndicator size="small" color="#000000" />
         )}
       </View>
@@ -187,7 +188,7 @@ const Property = ({route, navigation}) => {
 
   const filterCom = useCallback(
     (
-      propertyData,
+      propertyrentData,
       searchAddressSend,
       property_type,
       propertyFor,
@@ -196,9 +197,9 @@ const Property = ({route, navigation}) => {
     ) => {
       return (
         <Filter
-          max_price={propertyData?.max_price}
-          min_price={propertyData?.min_price}
-          property_type={propertyData?.property_type}
+          max_price={propertyrentData?.max_price}
+          min_price={propertyrentData?.min_price}
+          property_type={propertyrentData?.property_type}
           title={propertyFor}
           location={searchAddressSend}
           ptype={property_type}
@@ -294,7 +295,7 @@ const Property = ({route, navigation}) => {
         </ScrollView>
       </View>
       {filterCom(
-        propertyData,
+        propertyrentData,
         searchAddressSend,
         property_type,
         propertyFor,
@@ -303,7 +304,7 @@ const Property = ({route, navigation}) => {
       )}
       {TopF(property_type, setProperty_type, propertyFor, setProperty_for)}
       <FlatList
-        data={propertyData?.property || []}
+        data={propertyrentData?.propertyrent || []}
         renderItem={({Property, item}) => (
           <PropertyListComponet
             Property={Property}
@@ -317,7 +318,7 @@ const Property = ({route, navigation}) => {
           useCallback(
             <MapHeader
               title={propertyFor}
-              coordinates={propertyData?.coordinates}
+              coordinates={propertyrentData?.coordinates}
               navigation={navigation}
             />,
             [],
@@ -326,24 +327,29 @@ const Property = ({route, navigation}) => {
         onEndReached={loadMoreData}
         ListFooterComponent={renderFooter}
       />
-      {!propertyData.loading && propertyData?.property.length == 0 && (
-        <View
-          style={{height: 500, justifyContent: 'center', alignItems: 'center'}}>
-          <Image
-            style={{width: 150, height: 150, resizeMode: 'contain'}}
-            source={require('../../assets/search404.png')}
-          />
-          <Text
+      {!propertyrentData.loading &&
+        propertyrentData?.propertyrent.length == 0 && (
+          <View
             style={{
-              color: '#ccc',
-              fontWeight: 800,
-              fontSize: 30,
-              marginTop: 20,
+              height: 500,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            Sorry result not found
-          </Text>
-        </View>
-      )}
+            <Image
+              style={{width: 150, height: 150, resizeMode: 'contain'}}
+              source={require('../../assets/search404.png')}
+            />
+            <Text
+              style={{
+                color: '#ccc',
+                fontWeight: 800,
+                fontSize: 30,
+                marginTop: 20,
+              }}>
+              Sorry result not found
+            </Text>
+          </View>
+        )}
     </View>
   );
 };
@@ -447,4 +453,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Property;
+export default Propertyrent;

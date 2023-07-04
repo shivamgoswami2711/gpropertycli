@@ -13,11 +13,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import property from '../../assets/logo.png';
 import {useDispatch, useSelector} from 'react-redux';
 import {recentlyView} from '../../redux/actions/user';
+import NetInfo from '@react-native-community/netinfo';
 
 const PropertyView = ({navigation}) => {
   const dispatch = useDispatch();
   const [pageNumber, setPageNumber] = useState(1);
   const {profile, recentlyViewData} = useSelector(state => state.user);
+  const [netinformation, setNetinformation] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setNetinformation(state.isConnected);
+    });
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   function loadMoreData() {
     if (recentlyViewData?.last_page > pageNumber) {
@@ -40,11 +53,11 @@ const PropertyView = ({navigation}) => {
 
   function formatNumber(num = 0) {
     if (num) {
-      if (num >= 1000000000) {
-        return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'G';
+      if (num >= 10000000) {
+        return (num / 10000000).toFixed(1).replace(/\.0$/, '') + 'C';
       }
-      if (num >= 1000000) {
-        return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (num >= 100000) {
+        return (num / 100000).toFixed(1).replace(/\.0$/, '') + 'L';
       }
       if (num >= 1000) {
         return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
@@ -52,6 +65,26 @@ const PropertyView = ({navigation}) => {
       return num;
     }
     return ' ';
+  }
+
+  if (!netinformation) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Image
+          style={{width: 300, height: 300, resizeMode: 'contain'}}
+          source={require('../../assets/offline.jpg')}
+        />
+        <Text style={{color: '#ccc', fontSize: 24, fontWeight: 800}}>
+          Offline
+        </Text>
+      </View>
+    );
   }
 
   return (
@@ -66,7 +99,12 @@ const PropertyView = ({navigation}) => {
           />
         </TouchableOpacity>
         <Text
-          style={{color: '#fff', fontSize: 20, textTransform: 'capitalize'}}>
+          style={{
+            color: '#fff',
+            fontSize: 20,
+            marginLeft: -50,
+            textTransform: 'capitalize',
+          }}>
           saved
         </Text>
         <View></View>

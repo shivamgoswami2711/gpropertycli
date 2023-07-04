@@ -3,46 +3,40 @@ import React, {memo, useEffect, useState} from 'react';
 import MapView, {Marker} from 'react-native-maps';
 const WIDTH = Dimensions.get('window').width;
 import {StackActions} from '@react-navigation/native';
-import { findInitialRegion } from '../Include/SellData';
+import {findInitialRegion} from '../Include/SellData';
 
 const MapHeader = ({title, coordinates = [], navigation}) => {
-  
-  const [initialRegion, setInitialRegion] = useState(null);
-
-
-  useEffect(() => {
-    setInitialRegion(findInitialRegion(coordinates))
-  }, [coordinates])
-  
   return (
     <View>
       <View style={styles.mapContainer}>
         {coordinates.length !== 0 && (
-          <MapView
-            style={styles.map}
-            zoomControlEnabled={true}
-            loadingEnabled={true}
-            region={initialRegion}>
-            {coordinates.map((item, index) => (
-              <Marker
-                key={index}
-                onPress={() => {
-                  const pushAction = StackActions.replace(`Post`, {
-                    id: item.id,
-                  });
-                  navigation.dispatch(pushAction);
-                }}
-                coordinate={{
-                  latitude: parseFloat(item.lat),
-                  longitude: parseFloat(item.long),
-                }}
-              />
-            ))}
-          </MapView>
+          <View>
+            <MapView
+              style={styles.map}
+              zoomControlEnabled={true}
+              loadingEnabled={true}
+              region={findInitialRegion(coordinates)}>
+              {coordinates.map((item, index) => (
+                <Marker
+                  key={index}
+                  onPress={() => {
+                    const pushAction = StackActions.replace(`Post`, {
+                      id: item.id,
+                    });
+                    navigation.dispatch(pushAction);
+                  }}
+                  coordinate={{
+                    latitude: parseFloat(item.lat),
+                    longitude: parseFloat(item.long),
+                  }}
+                />
+              ))}
+            </MapView>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>{title}</Text>
+            </View>
+          </View>
         )}
-      </View>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
       </View>
     </View>
   );

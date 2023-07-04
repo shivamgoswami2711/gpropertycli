@@ -1,15 +1,25 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const propertiespage = id => async dispatch => {
+export const getuser = uid => async dispatch => {
   try {
-    dispatch({type: 'propertiesPageRequest'});
-    const {data} = await axios.get(`/user_name_img?id==${id}`);
-    dispatch({type: 'propertiesPageSuccess', payload: data});
+    dispatch({type: 'loginRequest'});
+    const {data} = await axios.get(`/getuser?uid=${uid}`);
+    dispatch({type: 'loginSuccess', payload: data[0]});
   } catch (error) {
     dispatch({
-      type: 'propertiesPageFail',
+      type: 'loginFail',
       payload: error.AxiosError,
+    });
+  }
+};
+export const setuser = data => async dispatch => {
+  try {
+    dispatch({type: 'loginSuccess', payload: data[0]});
+  } catch (error) {
+    dispatch({
+      type: 'loginFail',
+      payload: error,
     });
   }
 };
@@ -45,7 +55,6 @@ export const localLoginAction = id => async dispatch => {
         Accept: 'application/json',
       },
     });
-    console.log(data)
     const jsonValue = JSON.stringify(data);
     await AsyncStorage.setItem('profile', jsonValue);
     dispatch({type: 'loginSuccess', payload: data[0]});
@@ -70,6 +79,21 @@ export const userUpdate = formdata => async dispatch => {
     await AsyncStorage.setItem('profile', jsonValue);
     dispatch({type: 'UpdateUserSuccess', payload: data[0]});
   } catch (error) {
+    dispatch({
+      type: 'UpdateUserFail',
+      payload: error.AxiosError,
+    });
+  }
+};
+export const updatenumber = (olduid,uid,number) => async dispatch => {
+  try {
+    dispatch({type: 'UpdateUserRequest'});
+    const {data} = await axios.post(`/updatenumber?olduid=${olduid}&uid=${uid}&contact_number=${number}`)
+    const jsonValue = JSON.stringify(data);
+    await AsyncStorage.setItem('profile', jsonValue);
+    dispatch({type: 'UpdateUserSuccess', payload: data[0]});
+  } catch (error) {
+    console.log(error)
     dispatch({
       type: 'UpdateUserFail',
       payload: error.AxiosError,

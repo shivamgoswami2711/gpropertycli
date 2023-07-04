@@ -17,17 +17,28 @@ import housereant from '../../assets/housereant.png';
 import housesale from '../../assets/housesale.png';
 import FlatlistComponent from '../component/FlatlistSmailCard';
 import {propertyHome} from '../../redux/actions/home';
-import Geolocation from 'react-native-geolocation-service';
+// import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
+import NetInfo from '@react-native-community/netinfo';
 
 const Home = ({navigation}) => {
   const home = useSelector(state => state.home);
   const property = useSelector(state => state.property);
-  const [location, setLOcation] = useState({});
+  const [netinformation, setNetinformation] = useState(true);
   const dispatch = useDispatch();
 
   Geocoder.init('AIzaSyDxEmw9qvtFiT7LK8GbfLqyPgv3xN7YFZs');
 
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setNetinformation(state.isConnected);
+    });
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      unsubscribe();
+    };
+  }, []);
   // useEffect(() => {
   //   getLocationAsync();
   // }, []);
@@ -89,6 +100,23 @@ const Home = ({navigation}) => {
       </View>
     );
   });
+  if (!netinformation) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Image
+          style={{width: 300, height: 300, resizeMode: 'contain'}}
+          source={require('../../assets/offline.jpg')}
+        />
+        <Text style={{color:"#ccc",fontSize:24,fontWeight:800}}>Offline</Text>
+      </View>
+    );
+  }
 
   return (
     <View>
@@ -103,6 +131,11 @@ const Home = ({navigation}) => {
           <Text style={{fontSize: 16, color: '#ff9e3d'}}>Uploading......</Text>
         </View>
       )}
+       <View style={styles.addNewButtonContainer}>
+        <TouchableOpacity style={styles.addNewButton}>
+          <AntDesign name="plus" size={40} color="black" />
+        </TouchableOpacity>
+      </View>
       <ScrollView>
         <View style={styles.container}>
           <Image source={skyline} style={styles.backgroundImage} />
@@ -268,5 +301,30 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     color: '#000',
     textTransform: 'capitalize',
+  },
+  addNewButtonContainer: {
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
+    position: "absolute",
+    right: 30,
+    bottom: 50,
+    zIndex: 1,
+  },
+  addNewButton: {
+    width: 65,
+    height: 65,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 1, height: 3 },
+    borderWidth: 0.5,
+    borderColor: "#ccc",
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });

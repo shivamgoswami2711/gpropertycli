@@ -1,8 +1,13 @@
 import {StyleSheet, Text, ScrollView, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
 
-const TopFilter = ({property_type, setProperty_type, propertyFor, setProperty_for}) => {
-
+const TopFilter = ({
+  property_type,
+  setProperty_type,
+  propertyFor,
+  setProperty_for,
+  forOption,
+}) => {
   function setPforState(item) {
     setProperty_for(item);
   }
@@ -10,55 +15,61 @@ const TopFilter = ({property_type, setProperty_type, propertyFor, setProperty_fo
     setProperty_type(item);
   }
   return (
-    <ScrollView horizontal={true} style={{height: 48, marginTop: 5}}>
-      <TouchableOpacity
-        onPress={() => {
-          setPforState('rent');
-        }}
-        TouchableOpacity={0.6}
-        style={{
-          //   width: 100,
-          borderColor: propertyFor == 'rent' ? 'blue' : '#787777',
-          height: 40,
-          borderWidth: 1,
-          justifyContent: 'center',
-          borderRadius: 10,
-          marginHorizontal: 8,
-        }}>
-        <Text
+    <ScrollView
+      horizontal={true}
+      style={{height: 48, marginTop: 5, marginTop: 10}}>
+      {forOption && (
+        <TouchableOpacity
+          onPress={() => {
+            setPforState('rent');
+          }}
+          TouchableOpacity={0.6}
           style={{
-            fontSize: 18,
-            color: propertyFor == 'rent' ? 'blue' : '#787777',
-            padding: 5,
-            paddingHorizontal: 10,
+            //   width: 100,
+            borderColor: propertyFor == 'rent' ? 'blue' : '#787777',
+            height: 40,
+            borderWidth: 1,
+            justifyContent: 'center',
+            borderRadius: 10,
+            marginHorizontal: 8,
           }}>
-          Rent
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          setPforState('buy');
-        }}
-        TouchableOpacity={0.6}
-        style={{
-          //   width: 100,
-          borderColor: propertyFor == 'buy' ? 'blue' : '#787777',
-          height: 40,
-          borderWidth: 1,
-          justifyContent: 'center',
-          borderRadius: 10,
-          marginHorizontal: 8,
-        }}>
-        <Text
+          <Text
+            style={{
+              fontSize: 18,
+              color: propertyFor == 'rent' ? 'blue' : '#787777',
+              padding: 5,
+              paddingHorizontal: 10,
+            }}>
+            Rent
+          </Text>
+        </TouchableOpacity>
+      )}
+      {forOption && (
+        <TouchableOpacity
+          onPress={() => {
+            setPforState('buy');
+          }}
+          TouchableOpacity={0.6}
           style={{
-            fontSize: 18,
-            color: propertyFor == 'buy' ? 'blue' : '#000',
-            padding: 5,
-            paddingHorizontal: 10,
+            //   width: 100,
+            borderColor: propertyFor == 'buy' ? 'blue' : '#787777',
+            height: 40,
+            borderWidth: 1,
+            justifyContent: 'center',
+            borderRadius: 10,
+            marginHorizontal: 8,
           }}>
-          Sell
-        </Text>
-      </TouchableOpacity>
+          <Text
+            style={{
+              fontSize: 18,
+              color: propertyFor == 'buy' ? 'blue' : '#787777',
+              padding: 5,
+              paddingHorizontal: 10,
+            }}>
+            Buy
+          </Text>
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity
         onPress={() => {

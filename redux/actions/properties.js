@@ -21,6 +21,27 @@ export const propertiespage =
       });
     }
   };
+export const propertiesrentpage =
+  (id, param, type = 'buy', location) =>
+  async dispatch => {
+    const params = {
+      price_min: param.min || 0,
+      price_max: param.max || 0,
+      property_type: param?.property_type || '',
+      property_for: param?.propertyFor || '',
+      location: param?.location,
+    };
+    try {
+      dispatch({type: 'propertiesrentPageRequest'});
+      const {data} = await axios.get(`/properties?page=${id}`, {params});
+      dispatch({type: 'propertiesrentPageSuccess', payload: data});
+    } catch (error) {
+      dispatch({
+        type: 'propertiesrentPageFail',
+        payload: error.AxiosError,
+      });
+    }
+  };
 
 export const addNewpropertie = formdata => async dispatch => {
   try {
@@ -104,3 +125,19 @@ export const deleteProperty =
       });
     }
   };
+
+export const Property_seved = (uid, property_id) => async dispatch => {
+  try {
+    dispatch({type: 'PropertysevedRequest'});
+    const {data} = await axios.get(
+      `/propertysaveuser?uid=${uid}&property_id=${property_id}`,
+    );
+    console.log(data);
+    dispatch({type: 'PropertysevedSuccess', payload: data});
+  } catch (error) {
+    dispatch({
+      type: 'PropertysevedFail',
+      payload: error.AxiosError,
+    });
+  }
+};

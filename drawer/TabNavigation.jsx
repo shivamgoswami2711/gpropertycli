@@ -16,6 +16,10 @@ import {getHeaderTitle} from '@react-navigation/elements';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import Sell from '../src/screens/Sell';
 import PepperMenu from '../src/component/PepperMenu';
+import Homeproperty from '../src/screens/Homeproperty';
+import {SearchHome} from '../redux/actions/home';
+import Property from '../src/screens/Property';
+import Propertyrent from '../src/screens/Propertyrent';
 
 const DrawerNavigation = ({navigation}) => {
   const dispatch = useDispatch();
@@ -46,8 +50,7 @@ const DrawerNavigation = ({navigation}) => {
     <Tab.Navigator
       screenOptions={{
         showLabel: false,
-        tabBarShowLabel: false,
-
+        tabBarShowLabel: true,
         tabBarStyle: {
           backgroundColor: '#fff',
           height: 70,
@@ -134,10 +137,7 @@ const DrawerNavigation = ({navigation}) => {
                       onPress={(data, details = null) => {
                         setSearchAddressText(details.name);
                         setOnSerachClick(false);
-                        navigation.navigate('Property', {
-                          property_for: 'properties',
-                          address: details.name,
-                        });
+                        dispatch(SearchHome(details.name));
                       }}
                       renderRow={rowData => {
                         const title = rowData.structured_formatting.main_text;
@@ -213,9 +213,52 @@ const DrawerNavigation = ({navigation}) => {
             );
           },
         }}
-        component={Home}
+        component={Homeproperty}
       />
       <Tab.Screen
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View>
+              <Image
+                source={require('../assets/housereant.png')}
+                style={{
+                  width: 35,
+                  height: 35,
+                  tintColor: focused ? '#0426ff' : '#000',
+                }}
+                resizeMode="contain"
+              />
+            </View>
+          ),
+          header: ({navigation, route, options}) => {},
+        }}
+        name="Rent"
+        component={Propertyrent}
+        initialParams={{property_for: 'Rent'}}
+      />
+      <Tab.Screen
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View>
+              <Image
+                source={require('../assets/housebuy.png')}
+                style={{
+                  width: 35,
+                  height: 35,
+                  marginBottom: -10,
+                  tintColor: focused ? '#0426ff' : '#000',
+                }}
+                resizeMode="contain"
+              />
+            </View>
+          ),
+          header: ({navigation, route, options}) => {},
+        }}
+        name="Buy"
+        component={Property}
+        initialParams={{property_for: 'Buy'}}
+      />
+      {/* <Tab.Screen
         options={{
           tabBarIcon: ({focused}) => (
             <View>
@@ -263,7 +306,7 @@ const DrawerNavigation = ({navigation}) => {
         }}
         name="Sell"
         component={Sell}
-      />
+      /> */}
       <Tab.Screen
         options={{
           tabBarIcon: ({focused}) => (

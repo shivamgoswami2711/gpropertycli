@@ -29,21 +29,20 @@ import {
   Recently_view_check,
   I_amnt_interested,
 } from '../../redux/actions/post';
-import {useIsFocused} from '@react-navigation/native';
 import MapView, {Marker} from 'react-native-maps';
+import {Linking} from 'react-native';
+import VideoPlayer from 'react-native-video-controls';
+import PostCarousle from '../component/PostCarousle';
+// import admin from 'firebase-admin';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 
 const Post = ({route, navigation}) => {
   const postId = route.params.id;
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const videoRef = useRef(null);
   const {property, loading} = useSelector(state => state.post);
   const dispatch = useDispatch();
-  const isFocused = useIsFocused();
   const [carouseldata, setCarouseldata] = useState([]);
-
   const [contactModal, setContactModal] = useState(false);
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
@@ -51,6 +50,9 @@ const Post = ({route, navigation}) => {
   const [recentlyViewCheck, setrecentlyViewCheck] = useState([]);
   const {profile} = useSelector(state => state.user);
   const {recently_view_check} = useSelector(state => state.post);
+  const [fullcarousel, setFullcarousel] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef(null);
 
   useEffect(() => {
     const imageData = data && data.images;
@@ -80,6 +82,8 @@ const Post = ({route, navigation}) => {
     }
   }, [property]);
 
+  // sendnotification()
+
   useEffect(() => {
     dispatch(
       Recently_view_check({
@@ -94,31 +98,32 @@ const Post = ({route, navigation}) => {
     setrecentlyViewCheck(recently_view_check);
   }, [recently_view_check]);
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item, index}) => {
     if (item.type === 'image') {
       return (
-        <Image
-          source={item.source}
-          style={{
-            height: 300,
-            resizeMode: 'contain',
-            backgroundColor: '#ccc',
-            width: WIDTH,
-          }}
-        />
+        <TouchableOpacity onPress={() => setFullcarousel(index)}>
+          <Image
+            source={item.source}
+            style={{
+              height: 300,
+              resizeMode: 'contain',
+              backgroundColor: '#ccc',
+              width: WIDTH,
+            }}
+          />
+        </TouchableOpacity>
       );
     } else if (item.type === 'video') {
       return (
-        <Video
-          ref={videoRef}
-          source={item.source}
-          style={{height: 300, width: WIDTH, backgroundColor: '#ccc'}}
-          useNativeControls
-          paused={isFocused && carouselIndex !== 0}
-          shouldPlay={carouselIndex === 0}
-          pictureInPicture={true}
-          resizeMode="contain"
-        />
+          <VideoPlayer
+            onEnterFullscreen={() => setFullcarousel(index)}
+            onExitFullscreen={() => setFullcarousel(null)}
+            navigator={navigation}
+            tapAnywhereToPause={false}
+            source={item.source}
+            style={{height: 300, width: WIDTH, backgroundColor: '#ccc'}}
+            resizeMode="contain"
+          />
       );
     }
   };
@@ -137,26 +142,22 @@ const Post = ({route, navigation}) => {
     dispatch(oneproperty(postId));
   }, [dispatch, postId]);
 
-  function formatNumber(number = 0) {
-    if (number) {
-      const abbreviations = {
-        K: 1000,
-        M: 1000000,
-        B: 1000000000,
-        T: 1000000000000,
-      };
-
-      for (const key in abbreviations) {
-        if (number >= abbreviations[key]) {
-          const formattedNumber = number / abbreviations[key];
-          return formattedNumber.toFixed(0) + key;
-        }
+  function formatNumber(num = 0) {
+    if (num) {
+      if (num >= 10000000) {
+        return (num / 10000000).toFixed(1).replace(/\.0$/, '') + 'C';
       }
-
-      return number.toString();
+      if (num >= 100000) {
+        return (num / 100000).toFixed(1).replace(/\.0$/, '') + 'L';
+      }
+      if (num >= 1000) {
+        return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+      }
+      return num;
     }
     return ' ';
   }
+
   if (loading) {
     return (
       <View>
@@ -175,7 +176,7 @@ const Post = ({route, navigation}) => {
       };
       dispatch(contactForm(data));
       setContactModal(false);
-      Alert.alert('Sended');
+      Alert.alert('We will contact soon');
     } else {
       if (!name) Alert.alert('please enter name');
       if (!address) Alert.alert('please enter address');
@@ -183,7 +184,23 @@ const Post = ({route, navigation}) => {
     }
   }
 
-  function Interested() {
+  async function Interested() {
+    // await admin.messaging().send(
+    //   token, // ['token_1', 'token_2', ...]
+    //   {
+    //     notification: {
+    //       title: 'Basic Notification',
+    //       body: 'This is a basic notification sent from the server!',
+    //       imageUrl: 'https://my-cdn.com/app-logo.png',
+    //     },
+    //   },
+    //   {
+    //     // Required for background/quit data-only messages on iOS
+    //     contentAvailable: true,
+    //     // Required for background/quit data-only messages on Android
+    //     priority: 'high',
+    //   },
+    // );
     if (recentlyViewCheck.length == 0) {
       const data = {
         uid: profile.uid,
@@ -204,8 +221,20 @@ const Post = ({route, navigation}) => {
   }
   const data = property;
 
+  const onScroll = event => {
+    const contentOffset = event.nativeEvent.contentOffset;
+    const index = Math.round(contentOffset.x / Dimensions.get('window').width);
+    setCurrentIndex(index);
+  };
+
   return (
     <ScrollView style={styles.postContainer}>
+      <PostCarousle
+        navigation={navigation}
+        images={carouseldata}
+        contactModal={fullcarousel}
+        setCarouselModal={setFullcarousel}
+      />
       {/* corosuel */}
       <View style={styles.carouselCaontainer}>
         <FlatList
@@ -215,7 +244,23 @@ const Post = ({route, navigation}) => {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
+          ref={flatListRef}
+          onScroll={onScroll}
+          // initialNumToRender={0}
         />
+      </View>
+      <View style={styles.indicatorContainer}>
+        {carouseldata.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.indicator,
+              index === currentIndex
+                ? styles.activeIndicator
+                : styles.inactiveIndicator,
+            ]}
+          />
+        ))}
       </View>
       <View>
         {/* logo view */}
@@ -243,7 +288,7 @@ const Post = ({route, navigation}) => {
           <TouchableOpacity
             onPress={() => Interested()}
             style={[
-              styles.button,
+              styles.buttontop,
               {
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -262,16 +307,37 @@ const Post = ({route, navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setContactModal(true)}
-            style={styles.button}>
-            <Text style={styles.buttonText}>contact</Text>
+            style={styles.buttontop}>
+            <Text style={styles.buttonText}>Inquiry</Text>
           </TouchableOpacity>
+          {/* call button */}
+          {property && property.contact_number && (
+            <TouchableOpacity
+              onPress={() => Linking.openURL(`tel:${property.contact_number}`)}
+              style={[
+                styles.buttontop,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                },
+              ]}>
+              <AntDesign
+                style={[styles.icons]}
+                name={'phone'}
+                size={18}
+                color={recentlyViewCheck.length == 0 ? '#fff' : '#f04305'}
+              />
+              <Text style={[styles.buttonText]}>call</Text>
+            </TouchableOpacity>
+          )}
         </View>
         {/* info */}
         <View style={styles.infoContainer}>
           <Text style={styles.sizeText}>
             {data && data?.saleable_area}{' '}
             {data && data?.saleable_area_size_in == 'Feet'
-              ? `sp/${data && data?.saleable_area_size_in}`
+              ? `sq/${data && data?.saleable_area_size_in}`
               : data && data?.saleable_area_size_in}
           </Text>
           <Text style={styles.location}>{data && data?.location}</Text>
@@ -919,7 +985,11 @@ const Post = ({route, navigation}) => {
           </MapView>
         )}
       </View>
-      <Modal visible={contactModal} transparent={true} animationType="slide">
+      <Modal
+        visible={contactModal}
+        onRequestClose={() => setContactModal(false)}
+        transparent={true}
+        animationType="slide">
         <TouchableOpacity
           TouchableOpacity={0}
           style={styles.modalCantainer}
@@ -1056,11 +1126,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginHorizontal: 30,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+
   emailCaintainer: {
     marginHorizontal: 30,
     marginBottom: 20,
@@ -1117,7 +1183,13 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     marginBottom: 20,
     color: '#000',
-    textTransform: 'capitalize',
+    textTransform: 'uppercase',
+  },
+  buttontop: {
+    padding: 12,
+    backgroundColor: '#1E90FF',
+    borderRadius: 8,
+    width: 100,
   },
   button: {
     padding: 12,
@@ -1176,6 +1248,24 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 300,
     borderRadius: 10,
+  },
+  indicatorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  indicator: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  activeIndicator: {
+    backgroundColor: '#3959f7',
+  },
+  inactiveIndicator: {
+    backgroundColor: 'gray',
   },
 });
 
